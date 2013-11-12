@@ -261,6 +261,22 @@ SERVER:
         - "Xserve (Early 2008)"
         - "Xserve (Early 2009)"
 
+
+POWERMAC:
+    name: Power Mac
+    models:
+        - "Power Mac G4 (QuickSilver)"
+        - "Power Mac G4 (QuickSilver 2002)"
+        - "Power Mac G4 (QuickSilver 2002ED)"
+        - "Power Mac G4 (Mirrored Drive Doors)"
+        - "Power Mac G4 (FW 800)"
+        - "Power Mac G4 (Mirrored Drive Doors 2003)"
+        - "Power Mac G5"
+        - "Power Mac G5 (June 2004)"
+        - "Power Mac G5 (Late 2004)"
+        - "Power Mac G5 (Early 2005)"
+        - "Power Mac G5 (Late 2005)"
+
 OTHER:
     name: Other Products
     models:
