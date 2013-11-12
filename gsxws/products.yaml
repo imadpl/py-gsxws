@@ -63,6 +63,7 @@ IPAD:
         - "iPad mini Wi-Fi"
         - "iPad mini Wi-Fi, Cellular"
         - "iPad mini Wi-Fi, Cellular (MM)"
+        - "iPad mini (Retina)"
 
 IPHONE:
     name: iPhone
