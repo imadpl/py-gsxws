@@ -137,6 +137,18 @@ class TestWarrantyFunctions(TestCase):
         self.data = parse('tests/fixtures/warranty_status.xml',
                           'warrantyDetailInfo')
 
+    def test_product_type(self):
+        product = Product('DGKFL06JDHJP')
+        product.description='MacBook Pro (17-inch, Mid 2009)'
+        self.assertTrue(product.is_mac)
+        product.description='iMac (27-inch, Late 2013)'
+        self.assertTrue(product.is_mac)
+        product.description='iPhone 5'
+        self.assertTrue(product.is_iphone)
+        product.description = 'iPad 2 3G'
+        self.assertTrue(product.is_ipad)
+        self.assertTrue(product.is_ios)
+
     def test_purchase_date(self):
         self.assertIsInstance(self.data.estimatedPurchaseDate, date)
 
