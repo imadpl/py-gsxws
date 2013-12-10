@@ -3,6 +3,7 @@
 """
 https://gsxwsut.apple.com/apidocs/ut/html/WSAPIChangeLog.html?user=asp
 """
+import re
 import urllib
 
 from lookups import Lookup
@@ -25,7 +26,7 @@ class Product(object):
     """
     Something serviceable made by Apple
     """
-    def __init__(self, sn):
+    def __init__(self, sn, **kwargs):
         if validate(sn, 'alternateDeviceId'):
             self.alternateDeviceId = sn
             self._gsx = GsxObject(alternateDeviceId=sn)
@@ -157,8 +158,16 @@ class Product(object):
         return ad.unlocked or ("unlock" in policy)
 
     @property
+    def is_locked(self):
+        return not self.is_unlocked()
+
+    @property
     def should_check_activation(self):
         return hasattr(self, "alternateDeviceId") and not hasattr(self, "serialNumber")
+
+    @property
+    def is_mac(self):
+        return re.match(r'^i?Mac', self.description)
 
     @property
     def is_iphone(self):
@@ -180,10 +189,6 @@ class Product(object):
     def is_vintage(self):
         title = self.warrantyDetails.productDescription or ''
         return title.startswith('~VIN,')
-
-    @property
-    def is_locked(self):
-        return not self.is_unlocked()
 
     @property
     def parts_covered(self):
