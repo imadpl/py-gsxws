@@ -20,7 +20,27 @@ REPAIR_STATUSES = (
     ('AWTP', 'Awaiting Parts'),
     ('AWTR', 'Parts Allocated'),
     ('BEGR', 'In Repair'),
-    ('RFPU', 'Ready for Pickup')
+    ('RFPU', 'Ready for Pickup'),
+)
+
+COVERAGE_STATUSES = (
+    'CC', 'Custom Bid Contracts',
+    'CS', 'Customer Satisfaction',
+    'DO', 'DOA Coverage',
+    'LI', 'Apple Limited Warranty',
+    'MU', 'Missing Upon First Use',
+    'OO', 'Out of Warranty (no coverage)',
+    'PA', 'AppleCare Parts Agreement',
+    'PP', 'AppleCare Protection Plan',
+    'QP', 'Quality Program',
+    'RA', 'AppleCare Repair Agreement',
+    'RE', 'Repeat Service',
+    'G9', 'Pending Coverage Check',
+    'TC', 'Edu/Govt Warranty (Australia)',
+    'PT', 'Additional Part Coverage',
+    'EC', 'Additional Service Coverage',
+    'C1', 'NEW - AppleCare Protection Plan',
+    'VW', 'Consumer Law Coverage',
 )
 
 class Customer(GsxObject):
@@ -113,7 +133,8 @@ class Repair(GsxObject):
             self.repairConfirmationNumber = self.dispatchId
             del self._data['dispatchId']
 
-        return self._submit("UpdateKGBSerialNumberRequest", "UpdateKGBSerialNumber",
+        return self._submit("UpdateKGBSerialNumberRequest",
+                            "UpdateKGBSerialNumber",
                             "UpdateKGBSerialNumberResponse")
 
     def lookup(self):
@@ -145,7 +166,8 @@ class Repair(GsxObject):
         repair confirmation numbers to be submitted to GSX to be marked as complete.
         """
         self.repairConfirmationNumbers = numbers or self.dispatchId
-        return self._submit("MarkRepairCompleteRequest", "MarkRepairComplete",
+        return self._submit("MarkRepairCompleteRequest",
+                            "MarkRepairComplete",
                             "MarkRepairCompleteResponse")
 
     def status(self, numbers=None):
