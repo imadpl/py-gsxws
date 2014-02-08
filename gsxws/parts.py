@@ -6,6 +6,14 @@ import tempfile
 from lookups import Lookup
 from core import GsxObject, GsxError
 
+REASON_CODES = (
+    ('A', 'Part not needed'),
+    ('B', 'Duplicated part'),
+    ('C', 'Added wrong part'),
+    ('D', 'Tried to cancel order'),
+    ('E', 'Customer refused order'),
+)
+
 IMAGE_URL = "https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s"
 
 class Part(GsxObject):
