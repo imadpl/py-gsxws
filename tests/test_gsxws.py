@@ -194,6 +194,9 @@ class TestActivation(TestCase):
         p = Product(env['GSX_SN'])
         self.assertTrue(p.is_unlocked(self.data))
 
+    def test_imei(self):
+        self.assertEqual(self.data.imeiNumber, '010648001526755')
+
 
 class TestPartsLookup(TestCase):
     def setUp(self):
