@@ -182,6 +182,10 @@ class Product(object):
         return self.is_iphone or self.is_ipad
 
     @property
+    def is_valid(self):
+        return self.is_iphone or self.is_ipad or self.is_mac
+
+    @property
     def has_warranty(self):
         return self.warrantyDetails.limitedWarranty
 
