@@ -9,6 +9,7 @@ from lxml import objectify
 from datetime import datetime
 
 DATETIME_TYPES = ('dispatchSentDate',)
+STRING_TYPES = ('alternateDeviceId', 'imeiNumber',)
 BASE64_TYPES = ('packingList', 'proformaFileData', 'returnLabelFileData',)
 FLOAT_TYPES = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
 
@@ -18,18 +19,29 @@ TZMAP = {
     'PST': '-0800',   # Pacific Standard Time
     'CDT': '-0700',   # Central Daylight Time
     'CST': '-0600',   # Central Standard Time
-    'EST': '-0500',   # Eastern Standard Time
     'EDT': '-0400',   # Eastern Daylight Time
-    'CET': '+0100',   # Central European Time
+    'EST': '-0500',   # Eastern Standard Time
     'CEST': '+0200',  # Central European Summer Time
+    'CET': '+0100',   # Central European Time
+    'JST': '+0900',   # Japan Standard Time
     'IST': '+0530',   # Indian Standard Time
     'CCT': '+0800',   # Chinese Coast Time
-    'JST': '+0900',   # Japan Standard Time
-    'ACST': '+0930',  # Austrailian Central Standard Time
     'AEST': '+1000',  # Australian Eastern Standard Time
-    'ACDT': '+1030',  # Australian Central Daylight Time
     'AEDT': '+1100',  # Australian Eastern Daylight Time
+    'ACST': '+0930',  # Austrailian Central Standard Time
+    'ACDT': '+1030',  # Australian Central Daylight Time
     'NZST': '+1200',  # New Zealand Standard Time
+    'USZ1': '+0300',  # Kaliningrad Time
+    'MSK': '+0400',   # Moscow Time
+    'YEKST': '+0600', # Yekaterinburg Time
+    'OMSST': '+0700', # Omsk Time
+    'KRAST': '+0800', # Krasnoyarsk Time
+    'IRKST': '+0900', # Irkutsk Time
+    'YAKST': '+1000', # Yakutsk Time
+    'VLAST': '+1100', # Vladivostok Time
+    'MAGST': '+1200', # Magadan Time
+    'EET': '+0200',   # Eastern European Standard Time
+    'EEST': '+0300',  # Eastern European Summer Time
 }
 
 
@@ -48,10 +60,11 @@ def gsx_date(value):
 
 
 def gsx_boolean(value):
-    return value == 'Y' or value == 'true'
+    return value in ('Y', 'true',)
 
 
 def gsx_price(value):
+    # Strips currency from price
     return float(re.sub(r'[A-Z ,]', '', value))
 
 
@@ -75,6 +88,9 @@ def gsx_timestamp(value):
 
 
 class GsxElement(objectify.ObjectifiedElement):
+    """
+    Each element in the GSX response tree should be a GsxElement
+    """
     def __getattribute__(self, name):
         try:
             result = super(GsxElement, self).__getattribute__(name)
@@ -82,10 +98,14 @@ class GsxElement(objectify.ObjectifiedElement):
             """
             The XML returned by GSX can be pretty inconsistent, especially
             between the different environments. It's therefore more
-            practical to return and empty string than to expect AttributeErrors all
+            practical to return None than to expect AttributeErrors all
             over your application.
             """
             return
+
+        # Work around lxml chomping leading zeros off of IMEI numbers
+        if name in STRING_TYPES:
+            return unicode(result.text or '')
 
         if isinstance(result, objectify.NumberElement):
             return result.pyval
