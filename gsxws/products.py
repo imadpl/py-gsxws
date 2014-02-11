@@ -49,7 +49,7 @@ class Product(object):
         self.configCode = result.configCode
         return result
 
-    def warranty(self, parts=[]):
+    def warranty(self, parts=[], date_received=None):
         """
         The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
@@ -79,6 +79,9 @@ class Product(object):
         except Exception:
             pass
 
+        if date_received:
+            self._gsx.unitReceivedDate = date_received
+            
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._gsx._req.objects
         self.imageURL = self.warrantyDetails.imageURL
