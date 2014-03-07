@@ -84,7 +84,8 @@ def gsx_datetime(value):
 
 
 def gsx_timestamp(value):
-    return datetime.strptime(value, "%d-%b-%y %H:%M:%S")
+    # 03/06/14 09:01 PM
+    return datetime.strptime(value, "%m/%d/%y %H:%M %p")
 
 
 class GsxElement(objectify.ObjectifiedElement):
@@ -126,6 +127,8 @@ class GsxElement(objectify.ObjectifiedElement):
                 return gsx_price(result)
             if name.endswith('Date'):
                 return gsx_date(result)
+            if name.endswith('Timestamp'):
+                return gsx_timestamp(result)
             if re.search(r'^[YN]$', result):
                 return gsx_boolean(result)
 
@@ -153,8 +156,10 @@ def parse(root, response):
 
     return root.find('*//%s' % response)
 
+
 if __name__ == '__main__':
     import doctest
     import logging
     logging.basicConfig(level=logging.DEBUG)
     doctest.testmod()
+

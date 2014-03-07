@@ -81,7 +81,7 @@ class Product(object):
 
         if date_received:
             self._gsx.unitReceivedDate = date_received
-            
+
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._gsx._req.objects
         self.imageURL = self.warrantyDetails.imageURL
@@ -186,7 +186,7 @@ class Product(object):
 
     @property
     def is_valid(self):
-        return self.is_iphone or self.is_ipad or self.is_mac
+        return self.is_ios or self.is_mac
 
     @property
     def has_warranty(self):

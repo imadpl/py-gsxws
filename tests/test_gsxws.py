@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from datetime import date
 from os import environ as env
+from datetime import date, datetime
 
 from unittest import main, skip, TestCase
 
@@ -27,6 +27,24 @@ class TestCoreFunctions(TestCase):
         part.partNumber = '661-5571'
         rep.orderLines = [part]
         self.assertRegexpMatches(rep.dumps(), '<GsxObject><blaa>ääöö</blaa><orderLines>')
+
+
+class TestTypes(TestCase):
+    def setUp(self):
+        xml = open('tests/fixtures/escalation_details_lookup.xml', 'r').read()
+        self.data = parse(xml, 'lookupResponseData')
+
+    def test_unicode(self):
+        self.assertIsInstance(self.data.lastModifiedBy, unicode)
+
+    def test_timestamp(self):
+        self.assertIsInstance(self.data.createTimestamp, datetime)
+    
+    def test_ts_comp(self):
+        self.assertGreater(datetime.now(), self.data.createTimestamp)
+
+    def test_list(self):
+        self.assertIsInstance(self.data.escalationNotes, list)
 
 
 class TestErrorFunctions(TestCase):
@@ -250,6 +268,7 @@ class TestRepairUpdate(RemoteTestCase):
     def test_set_repair_techid(self):
         result = self.repair.set_techid('XXXXX')
         self.assertEqual(result.confirmationNumber, self.dispatchId)
+
 
 class TestCarryinRepairDetail(TestCase):
     def setUp(self):
