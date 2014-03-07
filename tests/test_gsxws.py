@@ -44,7 +44,8 @@ class TestTypes(TestCase):
         self.assertGreater(datetime.now(), self.data.createTimestamp)
 
     def test_list(self):
-        self.assertIsInstance(self.data.escalationNotes, list)
+        for x in self.data.escalationNotes.iterchildren():
+            self.assertIsInstance(x.text, str)
 
 
 class TestErrorFunctions(TestCase):

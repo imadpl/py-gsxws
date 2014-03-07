@@ -82,3 +82,7 @@ class Escalation(GsxObject):
         of a general escalation created by AASP or a carrier.
         """
         return Lookup(escalationId=self.escalationId).lookup("GeneralEscalationDetailsLookup")
+
+    def get_notes(self):
+        return self.objects.escalationNotes.iterchildren()
+
