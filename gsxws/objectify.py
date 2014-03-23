@@ -85,7 +85,7 @@ def gsx_datetime(value):
 
 def gsx_timestamp(value):
     # 03/06/14 09:01 PM
-    return datetime.strptime(value, "%m/%d/%y %H:%M %p")
+    return datetime.strptime(value, "%m/%d/%y %I:%M %p")
 
 
 class GsxElement(objectify.ObjectifiedElement):
