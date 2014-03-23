@@ -15,18 +15,20 @@ STATUSES = (
 )
 
 CONTEXTS = (
-    'Serial Number',
-    'Alternate Device Id',
-    'Dispatch Id',
-    'SRO Number',
-    'Invoice Number',
-    'Order Number',
-    'SSO number',
-    'Part Number',
-    'EEE Code',
-    'Tracking Number',
-    'Module Serial Number',
-    'Escalation Id',
+    ('1', 'Serial Number'),
+    ('2', 'Alternate Device Id'),
+    ('3', 'Dispatch Id'),
+    ('4', 'SRO Number'),
+    ('5', 'Invoice Number'),
+    ('6', 'Order Number'),
+    ('7', 'SSO number'),
+    ('8', 'Part Number'),
+    ('9', 'EEE Code'),
+    ('10', 'Tracking Number'),
+    ('11', 'Module Serial Number'),
+    ('12', 'Escalation Id'),
+    ('13', 'Consignment Increase Order'),
+    ('14', 'Consignment Return Order'),
 )
 
 ISSUE_TYPES = (
