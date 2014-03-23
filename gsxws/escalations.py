@@ -88,3 +88,10 @@ class Escalation(GsxObject):
     def get_notes(self):
         return self.objects.escalationNotes.iterchildren()
 
+
+class Context(GsxObject):
+    def __init__(self, ctype, cid):
+        super(Context, self).__init__()
+        self.contextType = ctype
+        self.contextID = cid
+

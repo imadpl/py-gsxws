@@ -85,13 +85,15 @@ class TestLookupFunctions(RemoteTestCase):
 
 
 class TestEscalationFunctions(RemoteTestCase):
-    @skip("Skip")
     def setUp(self):
         super(TestEscalationFunctions, self).setUp()
         esc = escalations.Escalation()
         esc.shipTo = env['GSX_SHIPTO']
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
+        c1 = escalations.Context(1, 'DGKFL06JDHJP')
+        c2 = escalations.Context(12, '2404776')
+        esc.escalationContext = [c1, c2]
         self.escalation = esc.create()
 
     def test_create_general_escalation(self):
@@ -104,6 +106,7 @@ class TestEscalationFunctions(RemoteTestCase):
         result = esc.update()
         self.assertEqual(result.updateStatus, 'SUCCESS')
 
+    @skip("Skip")
     def test_attach_general_escalation(self):
         esc = escalations.Escalation()
         esc.escalationId = self.escalation.escalationId
