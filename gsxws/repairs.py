@@ -297,6 +297,26 @@ class IndirectOnsiteRepair(Repair):
                             "repairConfirmation")
 
 
+class RepairOrReplace(Repair):
+    """
+    The Create Repair or Replace API allows users to submit Repair-Or-Replace information to GSX.
+    The submissions creates a GSX RoR Repair in the system.
+    """
+    COVERAGE_OPTIONS = (
+        ('N', 'No Damage'),
+        ('A1', 'Battery Service'),
+        ('A2', 'Returnable Damage'),
+        ('A3', 'Non-returnable Damage'),
+        ('X', 'Non-returnable damage covered by AppleCare+'),
+        ('RPL', 'Replace'),
+        ('Z', 'Override to Out of Warranty when part is covered by Variable Warranty')
+    )
+
+    def create(self):
+        self._namespace = "asp:"
+        return self._submit("repairData", "CreateRepairOrReplace", "repairConfirmation")
+
+
 class WholeUnitExchange(Repair):
     """
     The Create Whole Unit Exchange API allows the service providers to send

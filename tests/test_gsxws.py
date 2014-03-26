@@ -20,6 +20,21 @@ class RemoteTestCase(TestCase):
                 env['GSX_ENV'])
 
 
+class RepairTestCase(RemoteTestCase):
+    def setUp(self):
+        super(RepairTestCase, self).setUp()
+        customer = repairs.Customer(emailAddress='test@example.com')
+        customer.firstName = 'First Name'
+        customer.lastName = 'Last Name'
+        customer.addressLine1 = 'Address Line 1'
+        customer.primaryPhone = '0123456789'
+        customer.city = 'Test'
+        customer.zipCode = '12345'
+        customer.state = 'VIC'
+        customer.country = 'AU'
+        self.customer = customer
+
+
 class TestCoreFunctions(TestCase):
     def test_dump(self):
         rep = repairs.Repair(blaa=u'ääöö')
@@ -121,7 +136,27 @@ class TestEscalationFunctions(RemoteTestCase):
         self.assertEqual(result.escalationType, 'GSX Help')
 
 
-class TestRepairFunctions(RemoteTestCase):
+class TestRepairFunctions(RepairTestCase):
+    def test_repair_or_replace(self):
+        rep = repairs.RepairOrReplace()
+        rep.serialNumber = env['GSX_SN']
+        rep.unitReceivedDate = '03/20/2014'
+        rep.unitReceivedTime = '11:00 am'
+        rep.shipTo = env['GSX_SHIPTO']
+        rep.purchaseOrderNumber = '123456'
+        rep.coverageOptions = 'A1'
+        rep.symptom = 'test'
+        rep.diagnosis = 'test'
+        rep.shipper = 'XUPSN'
+        rep.trackingNumber = '123456'
+        rep.customerAddress = self.customer
+        part = repairs.RepairOrderLine()
+        part.partNumber = 'X661-5256'
+        part.comptiaCode = 'X01'
+        part.comptiaModifier = 'A'
+        rep.orderLines = [part]
+        rep.create()
+
     @skip("Skip")
     def test_whole_unit_exchange(self):
         rep = repairs.WholeUnitExchange()
@@ -132,16 +167,7 @@ class TestRepairFunctions(RemoteTestCase):
         rep.poNumber = ''
         rep.symptom = 'test'
         rep.diagnosis = 'test'
-        customer = repairs.Customer(emailAddress='test@example.com')
-        customer.firstName = 'First Name'
-        customer.lastName = 'Last Name'
-        customer.addressLine1 = 'Address Line 1'
-        customer.primaryPhone = '0123456789'
-        customer.city = 'Test'
-        customer.zipCode = '12345'
-        customer.state = 'Test'
-        customer.country = 'US'
-        rep.customerAddress = customer
+        rep.customerAddress = self.customer
         part = repairs.RepairOrderLine()
         part.partNumber = '661-5571'
         rep.orderLines = [part]

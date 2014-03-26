@@ -86,6 +86,10 @@ class Escalation(GsxObject):
         return Lookup(escalationId=self.escalationId).lookup("GeneralEscalationDetailsLookup")
 
     def get_notes(self):
+        """
+        Returns all the notes of this escalation.
+        Should probably be run after a lookup()
+        """
         return self.objects.escalationNotes.iterchildren()
 
 
