@@ -113,11 +113,11 @@ class Product(object):
         """
         >>> Product('DGKFL06JDHJP').diagnostics()
         """
-        diags = Diagnostics(serialNumber=self.serialNumber)
-        
         if hasattr(self, "alternateDeviceId"):
             diags = Diagnostics(alternateDeviceId=self.alternateDeviceId)
-
+        else:
+            diags = Diagnostics(serialNumber=self.serialNumber)
+            
         return diags.fetch()
 
     def fetch_image(self, url=None):
