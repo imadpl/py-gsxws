@@ -113,7 +113,7 @@ class Product(object):
         """
         >>> Product('DGKFL06JDHJP').diagnostics()
         """
-        diags = Diagnostics(serialNumber=self.sn)
+        diags = Diagnostics(serialNumber=self.serialNumber)
         
         if hasattr(self, "alternateDeviceId"):
             diags = Diagnostics(alternateDeviceId=self.alternateDeviceId)
