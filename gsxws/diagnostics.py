@@ -16,7 +16,7 @@ class Diagnostics(GsxObject):
         >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()
         """
         if hasattr(self, "alternateDeviceId"):
-            self._submit("lookupRequestData", "FetchIOSDiagnostic", "diagnosticTestData")
+            self._submit("lookupRequestData", "FetchIOSDiagnostic", "lookupResponseData")
         else:
             self._submit("lookupRequestData", "FetchRepairDiagnostic", "FetchRepairDiagnosticResponse")
 
