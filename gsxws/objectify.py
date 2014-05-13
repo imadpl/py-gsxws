@@ -9,6 +9,7 @@ from lxml import objectify
 from datetime import datetime
 
 DATETIME_TYPES = ('dispatchSentDate',)
+DIAGS_TIMESTAMP_TYPES = ('startTimeStamp', 'endTimeStamp',)
 STRING_TYPES = ('alternateDeviceId', 'imeiNumber',)
 BASE64_TYPES = ('packingList', 'proformaFileData', 'returnLabelFileData',)
 FLOAT_TYPES = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
@@ -88,6 +89,11 @@ def gsx_timestamp(value):
     return datetime.strptime(value, "%m/%d/%y %I:%M %p")
 
 
+def gsx_diags_timestamp(value):
+    # It is always in GMT and in format DD-MMM-YY HH24:MM:SS
+    return datetime.strptime(value, "%d-%b-%y %I:%M:%S")
+
+
 class GsxElement(objectify.ObjectifiedElement):
     """
     Each element in the GSX response tree should be a GsxElement
@@ -121,6 +127,8 @@ class GsxElement(objectify.ObjectifiedElement):
 
             if name in DATETIME_TYPES:
                 return gsx_datetime(result)
+            if name in DIAGS_TIMESTAMP_TYPES:
+                return gsx_diags_timestamp(result)
             if name in BASE64_TYPES:
                 return gsx_attachment(result)
             if name in FLOAT_TYPES:

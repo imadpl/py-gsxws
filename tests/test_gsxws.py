@@ -6,9 +6,10 @@ from datetime import date, datetime
 
 from unittest import main, skip, TestCase
 
-from gsxws.objectify import parse
+from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
-from gsxws import repairs, escalations, lookups, GsxError, ServicePart
+from gsxws import (repairs, escalations, lookups,
+                   GsxError, ServicePart, diagnostics)
 
 
 class RemoteTestCase(TestCase):
@@ -210,6 +211,18 @@ class TestWarrantyFunctions(TestCase):
         self.assertIsInstance(self.data.partCovered, bool)
         self.assertTrue(self.data.partCovered)
 
+
+class TestDiagnostics(RemoteTestCase):
+    def setUp(self):
+        super(TestDiagnostics, self).setUp()
+        self.results = diagnostics.Diagnostics(serialNumber=env['GSX_SN']).fetch()
+
+    def test_diag_result(self):
+        self.assertEqual(self.results.eventHeader.serialNumber, env['GSX_SN'])
+
+    def test_result_timestamp(self):
+        ts = gsx_diags_timestamp(self.results.eventHeader.startTimeStamp)
+        self.assertIsInstance(ts, datetime)
 
 class TestOnsiteCoverage(RemoteTestCase):
     def setUp(self):
