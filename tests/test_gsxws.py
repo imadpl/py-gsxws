@@ -212,7 +212,7 @@ class TestWarrantyFunctions(TestCase):
         self.assertTrue(self.data.partCovered)
 
 
-class TestDiagnostics(RemoteTestCase):
+class TestRepairDiagnostics(RemoteTestCase):
     def setUp(self):
         super(TestDiagnostics, self).setUp()
         self.results = diagnostics.Diagnostics(serialNumber=env['GSX_SN']).fetch()
@@ -223,6 +223,38 @@ class TestDiagnostics(RemoteTestCase):
     def test_result_timestamp(self):
         ts = gsx_diags_timestamp(self.results.eventHeader.startTimeStamp)
         self.assertIsInstance(ts, datetime)
+
+
+class TestIosDiagnostics(TestCase):
+    def setUp(self):
+        self.data = parse('tests/fixtures/ios_diagnostics.xml',
+                          'lookupResponseData')
+
+    def test_sn(self):
+        self.assertEqual(self.data.diagnosticTestData.testContext.serialNumber,
+                         "XXXXXXXXXXXX")
+
+    def test_result(self):
+        data = self.data.diagnosticTestData.testResult
+        for i in data.result:
+            logging.debug("%s: %s" % (i.name, i.value))
+
+        self.assertEqual(data.result[1].name, "FULLY_CHARGED")
+
+    def test_profile(self):
+        data = self.data.diagnosticProfileData.profile
+        for i in data.unit.key:
+            logging.debug("%s: %s" % (i.name, i.value))
+
+        self.assertEqual(data.unit.key[1].value, "fliPhone")
+
+    def test_report(self):
+        data = self.data.diagnosticProfileData.report
+        for i in data.reportData.key:
+            logging.debug("%s: %s" % (i.name, i.value))
+
+        self.assertEqual(data.reportData.key[0].name, "LAST_USAGE_LENGTH")
+
 
 class TestOnsiteCoverage(RemoteTestCase):
     def setUp(self):

@@ -16,9 +16,11 @@ class Diagnostics(GsxObject):
         >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()
         """
         if hasattr(self, "alternateDeviceId"):
-            self._submit("lookupRequestData", "FetchIOSDiagnostic", "lookupResponseData")
+            self._submit("lookupRequestData", "FetchIOSDiagnostic",
+                         "lookupResponseData")
         else:
-            self._submit("lookupRequestData", "FetchRepairDiagnostic", "FetchRepairDiagnosticResponse")
+            self._submit("lookupRequestData", "FetchRepairDiagnostic",
+                         "FetchRepairDiagnosticResponse")
 
         return self._req.objects
 
@@ -28,5 +30,6 @@ class Diagnostics(GsxObject):
         diagnostic event numbers associated with provided input
         (serial number or alternate device ID).
         """
-        self._submit("lookupRequestData", "FetchDiagnosticEventNumbers", "diagnosticEventNumbers")
+        self._submit("lookupRequestData", "FetchDiagnosticEventNumbers",
+                     "diagnosticEventNumbers")
         return self._req.objects
