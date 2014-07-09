@@ -173,7 +173,10 @@ class GsxError(Exception):
 
     @property
     def code(self):
-        return self.codes[0]
+        try:
+            return self.codes[0]
+        except IndexError:
+            return u'XXX'
 
     @property
     def message(self):
@@ -184,6 +187,9 @@ class GsxError(Exception):
         return dict(zip(self.codes, self.messages))
 
     def __unicode__(self):
+        if len(self.messages) < 1:
+            return u'Unknown GSX error'
+
         return u' '.join(self.messages)
 
 
