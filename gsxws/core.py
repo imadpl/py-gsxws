@@ -478,10 +478,10 @@ def connect(user_id, password, sold_to,
     global GSX_LOCALE
     global GSX_REGION
 
-    GSX_LANG = language
-    GSX_REGION = region
-    GSX_LOCALE = locale
-    GSX_ENV = environment
+    GSX_LANG    = language
+    GSX_REGION  = region
+    GSX_LOCALE  = locale
+    GSX_ENV     = environment
 
     act = GsxSession(user_id, password, sold_to, language, timezone)
     return act.login()

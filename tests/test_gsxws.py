@@ -181,7 +181,14 @@ class TestPartFunction(RemoteTestCase):
         self.assertIsInstance(parts[0].partNumber, basestring)
 
 
-class TestWarrantyFunctions(TestCase):
+class TestRemoteWarrantyFunctions(RemoteTestCase):
+    def test_warranty_lookup(self):
+        product = Product('DGKFL06JDHJP')
+        wty = product.warranty(ship_to=env['GSX_SHIPTO'])
+        self.assertEqual(wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
+
+
+class TestLocalWarrantyFunctions(TestCase):
     def setUp(self):
         self.data = parse('tests/fixtures/warranty_status.xml',
                           'warrantyDetailInfo')

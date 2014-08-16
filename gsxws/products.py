@@ -49,7 +49,7 @@ class Product(object):
         self.configCode = result.configCode
         return result
 
-    def warranty(self, parts=[], date_received=None):
+    def warranty(self, parts=[], date_received=None, ship_to=None):
         """
         The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
@@ -71,6 +71,9 @@ class Product(object):
         if self.should_check_activation:
             self.activation()
 
+        if ship_to:
+            self._gsx.shipTo = ship_to
+            
         try:
             self._gsx.partNumbers = []
             for k, v in parts:
