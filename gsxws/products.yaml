@@ -45,6 +45,7 @@ IMAC:
         - "iMac Line (2012 and Later)"
         - "iMac (21.5-inch, Early 2013)"
         - "iMac (27-inch, Late 2013)"
+        - "iMac (21.5-inch, Mid 2014)"
 
 IPAD:
     name: iPad
@@ -220,6 +221,8 @@ MACBOOKAIR:
         - "MacBook Air (13-inch, Mid 2012)"
         - "MacBook Air (11-inch, Mid 2013)"
         - "MacBook Air (13-inch, Mid 2013)"
+        - "MacBook Air (11-inch, Early 2014)"
+        - "MacBook Air (13-inch, Early 2014)"
 
 MACBOOKPRO:
     name: MacBook Pro
@@ -257,6 +260,8 @@ MACBOOKPRO:
         - "MacBook Pro (Retina, 15-inch, Early 2013)"
         - "MacBook Pro (Retina, 13-inch, Late 2013)"
         - "MacBook Pro (Retina, 15-inch, Late 2013)"
+        - "MacBook Pro (Retina, 13-inch, Mid 2014)"
+        - "MacBook Pro (Retina, 15-inch, Mid 2014)"
 
 SERVER:
     name: Server
