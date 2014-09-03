@@ -16,7 +16,7 @@ DISPLAYS:
         - "Cinema Display (30-inch DVI Early 2007)"
         - "LED Cinema Display (24-inch)"
         - "LED Cinema Display (27-inch)"
-        - "Thunderbolt Display (27-inch)"
+        - "Apple Thunderbolt Display (27-inch)"
 
 IMAC:
     name: iMac

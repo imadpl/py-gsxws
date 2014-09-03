@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from core import GsxObject
+from core import GsxObject, GsxError
 
 
 class Diagnostics(GsxObject):
     _namespace = "glob:"
+
+    def initiate(self):
+        """
+        The Initiate iOS Diagnostic API allows users to initiate Diagnostic Request for iOS Device.
+        Then it sends the diagnostic URL (diags://<Ticket Number >) as an email or SMS 
+        to the email address or phone number based on the information provided in the request. 
+        The ticket is generated within GSX system.
+        """
+        self._submit("initiateRequestData", "InitiateIOSDiagnostic",
+                     "initiateResponseData")
+
+        return self._req.objects.ticketNumber
 
     def fetch(self):
         """

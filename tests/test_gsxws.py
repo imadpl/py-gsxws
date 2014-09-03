@@ -9,7 +9,7 @@ from unittest import main, skip, TestCase
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
 from gsxws import (repairs, escalations, lookups,
-                   GsxError, ServicePart, diagnostics)
+                   GsxError, ServicePart, diagnostics,)
 
 
 class RemoteTestCase(TestCase):
@@ -19,6 +19,23 @@ class RemoteTestCase(TestCase):
                 env['GSX_PASSWORD'],
                 env['GSX_SOLDTO'],
                 env['GSX_ENV'])
+
+
+class DiagnosticsTestCase(RemoteTestCase):
+    def setUp(self):
+        super(DiagnosticsTestCase, self).setUp()
+        self.diag = diagnostics.Diagnostics(serialNumber=env['GSX_SN'])
+        self.diag.shipTo = env['GSX_SHIPTO']
+
+    def test_initiate_email(self):
+        self.diag.emailAddress = env['GSX_EMAIL']
+        res = self.diag.initiate()
+        self.assertRegexpMatches(str(res), r'\d+')
+
+    def test_initiate_phone(self):
+        self.diag.phoneNumber = env['GSX_PHONE']
+        with self.assertRaisesRegexp(GsxError, 'SMS sending is not supported'):
+            self.diag.initiate()
 
 
 class RepairTestCase(RemoteTestCase):
