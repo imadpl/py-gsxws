@@ -160,6 +160,24 @@ class Product(object):
         self._gsx.serialNumber = self.serialNumber
         return ad
 
+
+    @property
+    def fmip_status(self, wty=None):
+        if wty is None:
+            wty = self.warrantyDetails
+
+        if wty is None:
+            raise GsxError('Must run warranty status before FMiP status check')
+
+        return wty.activationLockStatus or ''
+
+    @property
+    def fmip_is_active(self):
+        """
+        Returns True if FMiP status is active, False otherwise
+        """
+        return self.fmip_status.startswith('Find My iPhone is active.')
+
     def is_unlocked(self, ad=None):
         """
         Returns true if this iOS device is unlocked

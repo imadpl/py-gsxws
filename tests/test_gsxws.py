@@ -199,10 +199,19 @@ class TestPartFunction(RemoteTestCase):
 
 
 class TestRemoteWarrantyFunctions(RemoteTestCase):
+    def setUp(self):
+        super(TestRemoteWarrantyFunctions, self).setUp()
+        self.product = Product(env['GSX_SN'])
+        self.wty = self.product.warranty(ship_to=env['GSX_SHIPTO'])
+
     def test_warranty_lookup(self):
-        product = Product('DGKFL06JDHJP')
-        wty = product.warranty(ship_to=env['GSX_SHIPTO'])
-        self.assertEqual(wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
+        self.assertEqual(self.wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
+
+    def test_fmip_status(self):
+        self.assertEqual(self.product.fmip_status, 'Find My iPhone is active. Find My iPhone must be turned off for whole unit repairs.')
+
+    def test_fmip_active(self):
+        self.assertTrue(self.product.fmip_is_active)
 
 
 class TestLocalWarrantyFunctions(TestCase):
