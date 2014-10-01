@@ -86,6 +86,8 @@ IPHONE:
         - "iPhone 5"
         - "iPhone 5C"
         - "iPhone 5S"
+        - "iPhone 6"
+        - "iPhone 6 Plus"
 
 IPHONEACCESSORY:
     name: iPhone Accessory
