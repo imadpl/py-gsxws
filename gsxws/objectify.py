@@ -8,41 +8,41 @@ import tempfile
 from lxml import objectify
 from datetime import datetime
 
-DATETIME_TYPES = ('dispatchSentDate',)
+DATETIME_TYPES  = ('dispatchSentDate',)
+STRING_TYPES    = ('alternateDeviceId', 'imeiNumber',)
+BASE64_TYPES    = ('packingList', 'proformaFileData', 'returnLabelFileData',)
+FLOAT_TYPES     = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
 DIAGS_TIMESTAMP_TYPES = ('startTimeStamp', 'endTimeStamp',)
-STRING_TYPES = ('alternateDeviceId', 'imeiNumber',)
-BASE64_TYPES = ('packingList', 'proformaFileData', 'returnLabelFileData',)
-FLOAT_TYPES = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
 
 TZMAP = {
-    'GMT': '',        # Greenwich Mean Time
-    'PDT': '-0700',   # Pacific Daylight Time
-    'PST': '-0800',   # Pacific Standard Time
-    'CDT': '-0700',   # Central Daylight Time
-    'CST': '-0600',   # Central Standard Time
-    'EDT': '-0400',   # Eastern Daylight Time
-    'EST': '-0500',   # Eastern Standard Time
-    'CEST': '+0200',  # Central European Summer Time
-    'CET': '+0100',   # Central European Time
-    'JST': '+0900',   # Japan Standard Time
-    'IST': '+0530',   # Indian Standard Time
-    'CCT': '+0800',   # Chinese Coast Time
-    'AEST': '+1000',  # Australian Eastern Standard Time
-    'AEDT': '+1100',  # Australian Eastern Daylight Time
-    'ACST': '+0930',  # Austrailian Central Standard Time
-    'ACDT': '+1030',  # Australian Central Daylight Time
-    'NZST': '+1200',  # New Zealand Standard Time
-    'USZ1': '+0300',  # Kaliningrad Time
-    'MSK': '+0400',   # Moscow Time
-    'YEKST': '+0600', # Yekaterinburg Time
-    'OMSST': '+0700', # Omsk Time
-    'KRAST': '+0800', # Krasnoyarsk Time
-    'IRKST': '+0900', # Irkutsk Time
-    'YAKST': '+1000', # Yakutsk Time
-    'VLAST': '+1100', # Vladivostok Time
-    'MAGST': '+1200', # Magadan Time
-    'EET': '+0200',   # Eastern European Standard Time
-    'EEST': '+0300',  # Eastern European Summer Time
+    'GMT'   : '',      # Greenwich Mean Time
+    'PDT'   : '-0700', # Pacific Daylight Time
+    'PST'   : '-0800', # Pacific Standard Time
+    'CDT'   : '-0700', # Central Daylight Time
+    'CST'   : '-0600', # Central Standard Time
+    'EDT'   : '-0400', # Eastern Daylight Time
+    'EST'   : '-0500', # Eastern Standard Time
+    'CEST'  : '+0200', # Central European Summer Time
+    'CET'   : '+0100', # Central European Time
+    'JST'   : '+0900', # Japan Standard Time
+    'IST'   : '+0530', # Indian Standard Time
+    'CCT'   : '+0800', # Chinese Coast Time
+    'AEST'  : '+1000', # Australian Eastern Standard Time
+    'AEDT'  : '+1100', # Australian Eastern Daylight Time
+    'ACST'  : '+0930', # Austrailian Central Standard Time
+    'ACDT'  : '+1030', # Australian Central Daylight Time
+    'NZST'  : '+1200', # New Zealand Standard Time
+    'USZ1'  : '+0300', # Kaliningrad Time
+    'MSK'   : '+0400', # Moscow Time
+    'YEKST' : '+0600', # Yekaterinburg Time
+    'OMSST' : '+0700', # Omsk Time
+    'KRAST' : '+0800', # Krasnoyarsk Time
+    'IRKST' : '+0900', # Irkutsk Time
+    'YAKST' : '+1000', # Yakutsk Time
+    'VLAST' : '+1100', # Vladivostok Time
+    'MAGST' : '+1200', # Magadan Time
+    'EET'   : '+0200', # Eastern European Standard Time
+    'EEST'  : '+0300', # Eastern European Summer Time
 }
 
 
