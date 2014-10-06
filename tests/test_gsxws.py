@@ -20,12 +20,32 @@ class RemoteTestCase(TestCase):
                 env['GSX_SOLDTO'],
                 env['GSX_ENV'])
 
+    def assertUnicodeOrInt(self, val):
+        try:
+            self.assertIsInstance(val, unicode)
+        except AssertionError:
+            self.assertIsInstance(val, int)
 
 class DiagnosticsTestCase(RemoteTestCase):
     def setUp(self):
         super(DiagnosticsTestCase, self).setUp()
         self.diag = diagnostics.Diagnostics(serialNumber=env['GSX_SN'])
         self.diag.shipTo = env['GSX_SHIPTO']
+
+    def test_fetch_ios(self):
+        self.diag = diagnostics.Diagnostics(alternateDeviceId=env['GSX_SN'])
+        res = self.diag.fetch()
+
+        for r in res.diagnosticTestData.testResult.result:
+            self.assertIsInstance(r.name, unicode)
+            self.assertUnicodeOrInt(r.value)
+
+        for r in res.diagnosticProfileData.profile.unit.key:
+            self.assertIsInstance(r.name, unicode)
+            self.assertUnicodeOrInt(r.value)
+            
+        for r in res.diagnosticProfileData.report.reportData.key:
+            self.assertUnicodeOrInt(r.value)
 
     def test_initiate_email(self):
         self.diag.emailAddress = env['GSX_EMAIL']
