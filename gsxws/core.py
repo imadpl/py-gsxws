@@ -39,13 +39,13 @@ import xml.etree.ElementTree as ET
 
 from datetime import date, time, datetime, timedelta
 
-VERSION = "0.9"
+VERSION     = "0.91"
 
-GSX_ENV = "it"
-GSX_LANG = "en"
-GSX_REGION = "emea"
-GSX_LOCALE = "en_XXX"
-GSX_TIMEOUT = 30
+GSX_ENV     = "it" # it, ut or pr
+GSX_LANG    = "en"
+GSX_REGION  = "emea"
+GSX_LOCALE  = "en_XXX"
+GSX_TIMEOUT = 30 # session timeout (expiration) in minutes
 
 GSX_SESSION = None
 
@@ -236,10 +236,10 @@ class GsxCache(object):
 
 class GsxRequest(object):
     "Creates and submits the SOAP envelope"
-    env = None
-    obj = None      # The GsxObject being submitted
-    data = None     # The GsxObject payload in XML format
-    body = None     # The Body part of the SOAP envelope
+    env     = None
+    obj     = None # The GsxObject being submitted
+    data    = None # The GsxObject payload in XML format
+    body    = None # The Body part of the SOAP envelope
 
     _request = ""
     _response = ""
