@@ -46,6 +46,7 @@ IMAC:
         - "iMac (21.5-inch, Early 2013)"
         - "iMac (27-inch, Late 2013)"
         - "iMac (21.5-inch, Mid 2014)"
+        - "iMac (Retina 5K, 27-inch, Late 2014)"
 
 IPAD:
     name: iPad
@@ -180,6 +181,7 @@ MACMINI:
         - "Mac mini Server (Mid 2011)"
         - "Mac mini (Late 2012)"
         - "Mac mini Server (Late 2012)"
+        - "Mac mini (Late 2014)"
 
 MACPRO:
     name: Mac Pro
