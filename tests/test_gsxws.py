@@ -43,7 +43,7 @@ class DiagnosticsTestCase(RemoteTestCase):
         for r in res.diagnosticProfileData.profile.unit.key:
             self.assertIsInstance(r.name, unicode)
             self.assertUnicodeOrInt(r.value)
-            
+
         for r in res.diagnosticProfileData.report.reportData.key:
             self.assertUnicodeOrInt(r.value)
 
@@ -92,7 +92,7 @@ class TestTypes(TestCase):
 
     def test_timestamp(self):
         self.assertIsInstance(self.data.createTimestamp, datetime)
-    
+
     def test_ts_comp(self):
         self.assertGreater(datetime.now(), self.data.createTimestamp)
 
@@ -107,7 +107,7 @@ class TestErrorFunctions(TestCase):
         self.data = GsxError(xml=xml)
 
     def test_code(self):
-        self.assertEqual(self.data.errors['RPR.ONS.025'], 
+        self.assertEqual(self.data.errors['RPR.ONS.025'],
                         'This unit is not eligible for an Onsite repair from GSX.')
 
     def test_message(self):
@@ -228,7 +228,8 @@ class TestRemoteWarrantyFunctions(RemoteTestCase):
         self.assertEqual(self.wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
     def test_fmip_status(self):
-        self.assertEqual(self.product.fmip_status, 'Find My iPhone is active. Find My iPhone must be turned off for whole unit repairs.')
+        self.assertEqual(self.product.fmip_status,
+                         'Find My iPhone is active. Find My iPhone must be turned off for whole unit repairs.')
 
     def test_fmip_active(self):
         self.assertTrue(self.product.fmip_is_active)
@@ -267,7 +268,7 @@ class TestLocalWarrantyFunctions(TestCase):
 
 class TestRepairDiagnostics(RemoteTestCase):
     def setUp(self):
-        super(TestDiagnostics, self).setUp()
+        super(DiagnosticsTestCase, self).setUp()
         self.results = diagnostics.Diagnostics(serialNumber=env['GSX_SN']).fetch()
 
     def test_diag_result(self):
@@ -389,7 +390,7 @@ class TestRepairUpdate(RemoteTestCase):
         self.dispatchId = 'G135934345'
         self.repair = repairs.CarryInRepair(self.dispatchId)
 
-    def test_set_repair_status(self):        
+    def test_set_repair_status(self):
         result = self.repair.set_status('BEGR')
         self.assertEqual(result.confirmationNumber, self.dispatchId)
 
