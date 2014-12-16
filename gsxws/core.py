@@ -226,8 +226,8 @@ class GsxCache(object):
 
     def set(self, key, value):
         d = {
-            'value': value,
-            'expires': self.now + self.expires
+            'value'     : value,
+            'expires'   : self.now + self.expires
         }
 
         self.shelf[key] = d
@@ -256,6 +256,7 @@ class GsxRequest(object):
 
         ET.SubElement(self.env, "soapenv:Header")
         self.body = ET.SubElement(self.env, "soapenv:Body")
+        self.xml_response = ''
 
         for k, v in kwargs.items():
             self.obj = v
@@ -309,11 +310,16 @@ class GsxRequest(object):
         data = ET.tostring(self.env, "UTF-8")
         res = self._send(method, data)
         xml = res.read()
+        self.xml_response = xml
 
         if res.status > 200:
             raise GsxError(xml=xml, url=self._url)
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
+        
+        if raw:
+            return ET.fromstring(self.xml_response)
+
         response = response or self._response
         self.objects = objectify.parse(xml, response)
         return self.objects

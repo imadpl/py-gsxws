@@ -11,6 +11,7 @@ MODIFIERS = (
     ("E", "Environmental"),
     ("F", "Configuration: Peripheral"),
     ("G", "Damaged"),
+    ("H", "Apple Review"),
 )
 
 GROUPS = (
@@ -28,6 +29,7 @@ GROUPS = (
     ('B', "iPhone"),
     ('E', "iPod"),
     ('F', "iPad"),
+    ('G', "Beats Products"),
 )
 
 
@@ -57,23 +59,21 @@ class CompTIA(GsxObject):
         >>> CompTIA().fetch() # doctest: +ELLIPSIS
         {u'A': {'989': u'Remote Inoperable', ...
         """
-        self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup", "comptiaInfo", True)
+        if self._cache.get('comptia'):
+            return self._cache.get('comptia')
 
-        if self._cache.get():
-            return self._cache.get()
-
-        root = self._req.objects
+        doc = self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup", "comptiaInfo", raw=True)
+        root = doc.find('.//comptiaInfo')
 
         for el in root.findall(".//comptiaGroup"):
             group = {}
             comp_id = unicode(el[0].text)
-
             for ci in el.findall("comptiaCodeInfo"):
                 group[ci[0].text] = unicode(ci[1].text)
 
             self._comptia[comp_id] = group
 
-        self._cache.set(self._comptia)
+        self._cache.set('comptia', self._comptia)
         return self._comptia
 
     def symptoms(self, component=None):

@@ -9,7 +9,7 @@ from unittest import main, skip, TestCase
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
 from gsxws import (repairs, escalations, lookups,
-                   GsxError, ServicePart, diagnostics,)
+                   GsxError, ServicePart, diagnostics, comptia,)
 
 
 class RemoteTestCase(TestCase):
@@ -25,6 +25,14 @@ class RemoteTestCase(TestCase):
             self.assertIsInstance(val, unicode)
         except AssertionError:
             self.assertIsInstance(val, int)
+
+
+class ComptiaTestCase(RemoteTestCase):
+    def test_fetch_comptia(self):
+        data = comptia.CompTIA().fetch()
+        print data
+        self.assertIsInstance(data['E'], dict)
+
 
 class DiagnosticsTestCase(RemoteTestCase):
     def setUp(self):
