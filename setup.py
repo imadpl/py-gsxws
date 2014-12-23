@@ -17,6 +17,7 @@ setup(
     author="Filipp Lepalaan",
     author_email="filipp@fps.ee",
     url="https://github.com/filipp/py-gsxws",
+    download_url="https://github.com/filipp/py-gsxws/tarball/0.5",
     license="BSD",
     packages=find_packages(),
 )
