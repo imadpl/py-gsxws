@@ -11,7 +11,7 @@ Installation:
     pip install -U -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
 
 
-It goes a little something like this:
+It goes a little something like this::
     
     # check warranty status
     import gsxws
