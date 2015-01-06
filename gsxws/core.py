@@ -274,7 +274,16 @@ class GsxRequest(object):
         logging.debug(self._url)
         logging.debug(xmldata)
 
-        ws = httplib.HTTPSConnection(parsed.netloc, timeout=GSX_TIMEOUT)
+        try:
+            # Python 2.6.9 and newer
+            # @TODO: Implement proper verified context
+            from ssl import _create_unverified_context
+            ws = httplib.HTTPSConnection(parsed.netloc,
+                                         timeout=GSX_TIMEOUT,
+                                         context=_create_unverified_context())
+        except ImportError:
+            ws = httplib.HTTPSConnection(parsed.netloc, timeout=GSX_TIMEOUT)
+        
         ws.putrequest("POST", parsed.path)
         ws.putheader("User-Agent", "py-gsxws %s" % VERSION)
         ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
