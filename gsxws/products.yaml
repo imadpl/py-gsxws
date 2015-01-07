@@ -293,6 +293,40 @@ POWERMAC:
         - "Power Mac G5 (Early 2005)"
         - "Power Mac G5 (Late 2005)"
 
+
+BEATS:
+    name: Beats Products
+    models:
+        - "Diddybeats"
+        - "Heartbeats (1st generation)"
+        - "Heartbeats (2nd generation)"
+        - "iBeats"
+        - "Powerbeats (1st generation)"
+        - "Powerbeats2 Wireless"
+        - "Tour (1st generation)"
+        - "Tour (2nd generation)"
+        - "urBeats (1st generation)"
+        - "urBeats (2nd generation)"
+        - "Mixr"
+        - "Solo (1st generation)"
+        - "Solo 2"
+        - "Solo HD"
+        - "Wireless (1st generation)"
+        - "Wireless (1.5)"
+        - "Executive"
+        - "Pro"
+        - "Studio (1st generation)"
+        - "Studio (2nd generation)"
+        - "Studio Wireless"
+        - "Beatbox"
+        - "Beatbox Portable (1st generation)"
+        - "Beatbox Portable (2nd generation)"
+        - "Beatbox Portable (3rd generation)"
+        - "Pill 1.0"
+        - "Pill 2.0"
+        - "Pill XL"
+
+
 OTHER:
     name: Other Products
     models:
