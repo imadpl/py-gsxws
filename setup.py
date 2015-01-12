@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gsxws",
-    version="0.54",
+    version="0.55",
     description="Library for communicating with GSX Web Services API.",
     long_description=open('README.rst').read(),
     install_requires=['PyYAML', 'lxml'],
@@ -18,8 +18,8 @@ setup(
     author="Filipp Lepalaan",
     author_email="filipp@fps.ee",
     url="https://github.com/filipp/py-gsxws",
-    download_url="https://github.com/filipp/py-gsxws/tarball/0.54",
+    download_url="https://github.com/filipp/py-gsxws/tarball/0.55",
     license="BSD",
     packages=find_packages(),
-    package_data={'gsxws': ['products.yaml']}
+    package_data={'gsxws': ['products.yaml', 'langs.json']}
 )

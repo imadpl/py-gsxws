@@ -277,7 +277,6 @@ SERVER:
         - "Xserve (Early 2008)"
         - "Xserve (Early 2009)"
 
-
 POWERMAC:
     name: Power Mac
     models:
@@ -292,7 +291,6 @@ POWERMAC:
         - "Power Mac G5 (Late 2004)"
         - "Power Mac G5 (Early 2005)"
         - "Power Mac G5 (Late 2005)"
-
 
 BEATS:
     name: Beats Products
@@ -325,7 +323,6 @@ BEATS:
         - "Pill 1.0"
         - "Pill 2.0"
         - "Pill XL"
-
 
 OTHER:
     name: Other Products
