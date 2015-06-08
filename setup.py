@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gsxws",
-    version="0.55",
+    version="0.56",
     description="Library for communicating with GSX Web Services API.",
     long_description=open('README.rst').read(),
     install_requires=['PyYAML', 'lxml'],
