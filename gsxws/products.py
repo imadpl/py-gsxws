@@ -26,6 +26,9 @@ class Product(object):
     """
     Something serviceable made by Apple
     """
+    sn          = '' #serialNumber
+    description = '' #configDescription
+
     def __init__(self, sn, **kwargs):
         if validate(sn, 'alternateDeviceId'):
             self.alternateDeviceId = sn
