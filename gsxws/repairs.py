@@ -198,7 +198,7 @@ class Repair(GsxObject):
         # fix tracking URL, if available
         for i, p in enumerate(details.partsInfo):
             try:
-                url = p.carrierURL.replace('<<TRKNO>>', p.deliveryTrackingNumber)
+                url = p.carrierURL.replace('<<TRKNO>>', str(p.deliveryTrackingNumber))
                 details.partsInfo[i].carrierURL = url
             except AttributeError:
                 pass
