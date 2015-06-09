@@ -47,6 +47,7 @@ IMAC:
         - "iMac (27-inch, Late 2013)"
         - "iMac (21.5-inch, Mid 2014)"
         - "iMac (Retina 5K, 27-inch, Late 2014)"
+        - "iMac (Retina 5K, 27-inch, Mid 2015)"
 
 IPAD:
     name: iPad
@@ -212,6 +213,22 @@ MACBOOK:
         - "MacBook (13-inch, Mid 2009)"
         - "MacBook (13-inch, Late 2009)"
         - "MacBook (13-inch, Mid 2010)"
+        - "MacBook (Retina, 12-inch, Early 2015)"
+
+MACBOOKLEGACY:
+    name: MacBook
+    models:
+        - "MacBook (13-inch)"
+        - "MacBook (13-inch Late 2006)"
+        - "MacBook (13-inch Mid 2007)"
+        - "MacBook (13-inch Late 2007)"
+        - "MacBook (13-inch Early 2008)"
+        - "MacBook (13-inch, Late 2008)"
+        - "MacBook (13-inch, Aluminum, Late 2008)"
+        - "MacBook (13-inch, Early 2009)"
+        - "MacBook (13-inch, Mid 2009)"
+        - "MacBook (13-inch, Late 2009)"
+        - "MacBook (13-inch, Mid 2010)"
 
 MACBOOKAIR:
     name: MacBook Air
@@ -268,6 +285,8 @@ MACBOOKPRO:
         - "MacBook Pro (Retina, 15-inch, Late 2013)"
         - "MacBook Pro (Retina, 13-inch, Mid 2014)"
         - "MacBook Pro (Retina, 15-inch, Mid 2014)"
+        - "MacBook Pro (Retina, 13-inch, Early 2015)"
+        - "MacBook Pro (Retina, 15-inch, Mid 2015)"
 
 SERVER:
     name: Server
