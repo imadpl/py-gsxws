@@ -15,10 +15,7 @@ from gsxws import (repairs, escalations, lookups,
 class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
-        connect(env['GSX_USER'],
-                env['GSX_PASSWORD'],
-                env['GSX_SOLDTO'],
-                env['GSX_ENV'])
+        connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
 
     def assertUnicodeOrInt(self, val):
         try:
@@ -183,6 +180,11 @@ class TestEscalationFunctions(RemoteTestCase):
 
 
 class TestRepairFunctions(RepairTestCase):
+    def test_symptom_issue(self):
+        from gsxws.repairs import SymptomIssue
+        r = SymptomIssue(serialNumber=env['GSX_SN']).fetch()
+        print r
+        
     def test_repair_or_replace(self):
         rep = repairs.RepairOrReplace()
         rep.serialNumber = env['GSX_SN']
