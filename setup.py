@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from gsxws.core import VERSION
 
 setup(
     name="gsxws",
-    version="0.56",
+    version=VERSION,
     description="Library for communicating with GSX Web Services API.",
     long_description=open('README.rst').read(),
     install_requires=['PyYAML', 'lxml'],

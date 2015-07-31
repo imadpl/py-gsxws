@@ -24,6 +24,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import os
 import re
 import json
 import base64
@@ -31,7 +32,7 @@ import shelve
 import os.path
 import hashlib
 import logging
-import httplib
+import requests
 import tempfile
 import objectify
 from urlparse import urlparse
@@ -39,9 +40,9 @@ import xml.etree.ElementTree as ET
 
 from datetime import date, time, datetime, timedelta
 
-VERSION     = "0.91"
+VERSION     = "0.92"
 
-GSX_ENV     = "it" # it, ut or pr
+GSX_ENV     = "ut" # it, ut or pr
 GSX_LANG    = "en"
 GSX_REGION  = "emea"
 GSX_LOCALE  = "en_XXX"
@@ -57,6 +58,8 @@ GSX_REGIONS = (
     ('006', "Canadia"),
     ('007', "Latin America"),
 )
+
+GSX_TIMEZONE = 'CEST'
 
 GSX_TIMEZONES = (
     ('PST',     "UTC - 8h (Pacific Standard Time)"),
@@ -95,8 +98,8 @@ ENVIRONMENTS = (
     ('it', "Testing"),
 )
 
-GSX_HOSTS = {'pr': 'ws2', 'it': 'wsit', 'ut': 'wsut'}
-GSX_URL = "https://gsx{env}.apple.com/gsx-ws/services/{region}/asp"
+GSX_HOSTS = {'pr': '', 'it': 'it', 'ut': 'ut'}
+GSX_URL = "https://gsxapi{env}.apple.com/gsx-ws/services/{region}/asp"
 
 
 def validate(value, what=None):
@@ -120,7 +123,7 @@ def validate(value, what=None):
     result = None
 
     if not isinstance(value, basestring):
-        raise ValueError('%s is not valid input' % value)
+        raise ValueError('%s is not valid input (%s != string)' % (value, type(value)))
 
     rex = {
         'partNumber':       r'^([A-Z]{1,2})?\d{3}\-?(\d{4,5}|[A-Z]{1,2})(/[A-Z])?$',
@@ -269,32 +272,29 @@ class GsxRequest(object):
         global GSX_ENV, GSX_REGION, GSX_HOSTS, GSX_URL, GSX_TIMEOUT
 
         self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
-        parsed = urlparse(self._url)
 
         logging.debug(self._url)
         logging.debug(xmldata)
 
+        headers = {
+            'User-Agent'    : "py-gsxws %s" % VERSION,
+            'Content-type'  : 'text/xml; charset="UTF-8"',
+            'SOAPAction'    : '"%s"' % method
+        }
+
+        # Send GSX client certs with every request
         try:
-            # Python 2.6.9 and newer
-            # @TODO: Implement proper verified context
-            from ssl import _create_unverified_context
-            ws = httplib.HTTPSConnection(parsed.netloc,
-                                         timeout=GSX_TIMEOUT,
-                                         context=_create_unverified_context())
-        except ImportError:
-            ws = httplib.HTTPSConnection(parsed.netloc, timeout=GSX_TIMEOUT)
-        
-        ws.putrequest("POST", parsed.path)
-        ws.putheader("User-Agent", "py-gsxws %s" % VERSION)
-        ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
-        ws.putheader("Content-length", "%d" % len(xmldata))
-        ws.putheader("SOAPAction", '"%s"' % method)
-        ws.endheaders()
-        ws.send(xmldata)
+            self.gsx_cert = os.environ['GSX_CERT']
+            self.gsx_key = os.environ['GSX_KEY']
+        except KeyError as e:
+            raise GsxError('SSL configuration error: %s' % e)
 
         try:
-            return ws.getresponse()
-        except Exception, e:
+            return requests.post(self._url, cert=(self.gsx_cert, self.gsx_key),
+                                 data=xmldata,
+                                 headers=headers,
+                                 timeout=GSX_TIMEOUT)
+        except Exception as e:
             raise GsxError('GSX connection failed: %s' % e)
 
     def _submit(self, method, response=None, raw=False):
@@ -318,13 +318,13 @@ class GsxRequest(object):
 
         data = ET.tostring(self.env, "UTF-8")
         res = self._send(method, data)
-        xml = res.read()
+        xml = res.text.encode('utf-8')
         self.xml_response = xml
 
-        if res.status > 200:
+        if res.status_code > 200:
             raise GsxError(xml=xml, url=self._url)
 
-        logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
+        logging.debug("Response: %s %s %s" % (res.status_code, res.reason, xml))
         
         if raw:
             return ET.fromstring(self.xml_response)
@@ -438,11 +438,10 @@ class GsxSession(GsxObject):
     _cache = None
     _namespace = "glob:"
 
-    def __init__(self, user_id, password, sold_to, language, timezone):
+    def __init__(self, user_id, sold_to, language, timezone):
         global GSX_ENV
 
         self.userId = user_id
-        self.password = password
         self.languageCode = language
         self.userTimeZone = timezone
         self.serviceAccountNo = str(sold_to)
@@ -480,7 +479,7 @@ class GsxSession(GsxObject):
         return GsxRequest(LogoutRequest=self)
 
 
-def connect(user_id, password, sold_to,
+def connect(user_id, sold_to,
             environment=GSX_ENV,
             language=GSX_LANG,
             timezone="CEST",
@@ -495,12 +494,12 @@ def connect(user_id, password, sold_to,
     global GSX_LOCALE
     global GSX_REGION
 
+    GSX_ENV     = environment
     GSX_LANG    = language
     GSX_REGION  = region
     GSX_LOCALE  = locale
-    GSX_ENV     = environment
 
-    act = GsxSession(user_id, password, sold_to, language, timezone)
+    act = GsxSession(user_id, sold_to, language, timezone)
     return act.login()
 
 
@@ -511,12 +510,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Communicate with GSX Web Services")
 
     parser.add_argument("user_id")
-    parser.add_argument("password")
     parser.add_argument("sold_to")
-    parser.add_argument("--language", default="en")
-    parser.add_argument("--timezone", default="CEST")
-    parser.add_argument("--environment", default="it")
-    parser.add_argument("--region", default="emea")
+    parser.add_argument("--language", default=GSX_LANG)
+    parser.add_argument("--timezone", default=GSX_TIMEZONE)
+    parser.add_argument("--environment", default=GSX_ENV)
+    parser.add_argument("--region", default=GSX_REGION)
 
     args = parser.parse_args()
     logging.basicConfig(level=logging.DEBUG)

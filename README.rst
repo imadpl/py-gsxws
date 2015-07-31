@@ -13,9 +13,8 @@ Requirements
 ************
 
 - Python 2.7 or later
-- lxml
-- PyYAML
-- A valid Apple ID with access to GSX Web Services.
+- contents of requirements.pip
+- GSX client certs and valid Apple ID with access to GSX Web Services
 
 Installation::
 
@@ -33,13 +32,26 @@ Usage
 It goes a little something like this::
     
     # check warranty status
+    import os
     import gsxws
-    gsxws.connect(apple_id, password, sold_to)
+    os.environ['GSX_CERT'] = '/path/to/gsx/client/cert.pem'
+    os.environ['GSX_KEY'] = '/path/to/gsx/client/cert_private_key.pem'
+    gsxws.connect(apple_id, sold_to)
     mac = gsxws.Product('70033CDFA4S')
     mac.warranty()
 
     # get available parts for this machine
     mac.parts()
 
-
 Check the tests-folder for more examples.
+
+
+***
+FAQ
+***
+
+Q: My script keeps prompting me for the private key passphrase - how could I automate this?
+A: One way would be to remove the passphrase from the key:
+
+    $ openssl rsa -in privatekey.pem -out privatekey.nopass.pem
+
