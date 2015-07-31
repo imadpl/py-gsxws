@@ -20,20 +20,23 @@ class Diagnostics(GsxObject):
 
     def fetch(self):
         """
-        The Fetch Repair Diagnostics API allows the service providers/depot/carriers
-        to fetch MRI/CPU diagnostic details from the Apple Diagnostic Repository OR
-        diagnostic test details of iOS Devices.
-        The ticket is generated within GSX system.
+        The Fetch Diagnostic Details API allows users to fetch diagnostic test details 
+        of all Devices.This API will retrieve diagnostic tests performed on the device 
+        as well as profile and report data for the tests. 
 
         >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()
         """
-        if hasattr(self, "alternateDeviceId"):
-            self._submit("lookupRequestData", "FetchIOSDiagnostic",
-                         "lookupResponseData")
-        else:
-            self._submit("lookupRequestData", "FetchRepairDiagnostic",
-                         "FetchRepairDiagnosticResponse")
+        self._submit("diagnosticDetailsRequestData", "FetchDiagnosticDetails",
+                     "diagnosticDetailsResponseData")
+        return self._req.objects
 
+    def fetch_suites(self):
+        """
+        The Fetch Diagnostic Suite API allows user to fetch associated Diagnostic Suite IDs 
+        for a given serial number from Apple Diagnostic Repository irrespective of Service Account. 
+        """
+        self._submit("diagnosticSuitesRequestData", "FetchDiagnosticSuites",
+                     "diagnosticSuitesResponseData")
         return self._req.objects
 
     def events(self):
@@ -45,3 +48,14 @@ class Diagnostics(GsxObject):
         self._submit("lookupRequestData", "FetchDiagnosticEventNumbers",
                      "diagnosticEventNumbers")
         return self._req.objects
+
+    def run(self):
+        """
+        The Run Diagnostic Test API allows users to run a specific or 
+        all the diagnostic tests on a device. User has to first invoke Fetch Diagnostic Suite API 
+        to fetch associated suite ID's for given serial number.
+        """
+        self._submit("diagnosticTestRequestData", "RunDiagnosticTest",
+                     "diagnosticTestResponseData")
+        return self._req.objects
+        
