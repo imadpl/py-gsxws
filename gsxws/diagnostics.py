@@ -21,7 +21,7 @@ class Diagnostics(GsxObject):
     def fetch(self):
         """
         The Fetch Diagnostic Details API allows users to fetch diagnostic test details 
-        of all Devices.This API will retrieve diagnostic tests performed on the device 
+        of all Devices. This API will retrieve diagnostic tests performed on the device 
         as well as profile and report data for the tests. 
 
         >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()

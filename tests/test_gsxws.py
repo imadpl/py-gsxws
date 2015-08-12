@@ -16,6 +16,14 @@ class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
         connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
+        self.sn = env['GSX_SN']
+        device = Product(sn=self.sn)
+        parts = device.parts()
+
+        self.part = repairs.RepairOrderLine()
+        self.part.partNumber = parts[0].partNumber
+        self.part.comptiaCode = 'X01'
+        self.part.comptiaModifier = 'A'
 
     def assertUnicodeOrInt(self, val):
         try:
@@ -27,18 +35,17 @@ class RemoteTestCase(TestCase):
 class ComptiaTestCase(RemoteTestCase):
     def test_fetch_comptia(self):
         data = comptia.CompTIA().fetch()
-        print data
         self.assertIsInstance(data['E'], dict)
 
 
 class DiagnosticsTestCase(RemoteTestCase):
     def setUp(self):
         super(DiagnosticsTestCase, self).setUp()
-        self.diag = diagnostics.Diagnostics(serialNumber=env['GSX_SN'])
+        self.diag = diagnostics.Diagnostics(serialNumber=self.sn)
         self.diag.shipTo = env['GSX_SHIPTO']
 
-    def test_fetch_ios(self):
-        self.diag = diagnostics.Diagnostics(alternateDeviceId=env['GSX_SN'])
+    def test_fetch(self):
+        self.diag = diagnostics.Diagnostics(alternateDeviceId=self.sn)
         res = self.diag.fetch()
 
         for r in res.diagnosticTestData.testResult.result:
@@ -65,6 +72,7 @@ class DiagnosticsTestCase(RemoteTestCase):
 
 class RepairTestCase(RemoteTestCase):
     def setUp(self):
+        from datetime import datetime, timedelta
         super(RepairTestCase, self).setUp()
         customer = repairs.Customer(emailAddress='test@example.com')
         customer.firstName = 'First Name'
@@ -73,9 +81,17 @@ class RepairTestCase(RemoteTestCase):
         customer.primaryPhone = '0123456789'
         customer.city = 'Test'
         customer.zipCode = '12345'
-        customer.state = 'VIC'
-        customer.country = 'AU'
+        customer.state = 'ZZ'
+        customer.country = 'FI'
         self.customer = customer
+        d = datetime.now() - timedelta(days=7)
+        self.date = d.strftime('%m/%d/%y')
+        self.time = d.strftime('%I:%M AM')
+
+        r = repairs.SymptomIssue(serialNumber=self.sn).fetch()
+        self.symptom = r.symptoms[0].reportedSymptomCode
+        r = repairs.SymptomIssue(reportedSymptomCode=self.symptom).fetch()
+        self.issue = r.issues[0].reportedIssueCode
 
 
 class TestCoreFunctions(TestCase):
@@ -136,9 +152,7 @@ class TestLookupFunctions(RemoteTestCase):
         l = lookups.Lookup(serialNumber=env['GSX_SN'])
         l.repairStrategy = "CA"
         l.shipTo = env['GSX_SHIPTO']
-        part = ServicePart('661-5502')
-        part.symptomCode = 'H06'
-        r = l.component_check([part])
+        r = l.component_check([self.part])
         self.assertFalse(r.eligibility)
 
 
@@ -183,34 +197,52 @@ class TestRepairFunctions(RepairTestCase):
     def test_symptom_issue(self):
         from gsxws.repairs import SymptomIssue
         r = SymptomIssue(serialNumber=env['GSX_SN']).fetch()
-        print r
-        
+        self.assertEqual(r.symptoms[0].reportedSymptomCode, 6115)
+    
+    def test_create_carryin(self):
+        rep = repairs.CarryInRepair()
+        rep.serialNumber = self.sn
+        rep.unitReceivedDate = self.date
+        rep.unitReceivedTime = self.time
+        rep.orderLines = [self.part]
+        rep.shipTo = env['GSX_SHIPTO']
+        rep.poNumber = '123456'
+        rep.symptom = 'This is a test symptom'
+        rep.diagnosis = 'This is a test diagnosis'
+        rep.customerAddress = self.customer
+        rep.reportedSymptomCode = self.symptom
+        rep.reportedIssueCode = self.issue
+        rep.create()
+
     def test_repair_or_replace(self):
         rep = repairs.RepairOrReplace()
         rep.serialNumber = env['GSX_SN']
-        rep.unitReceivedDate = '03/20/2014'
-        rep.unitReceivedTime = '11:00 am'
+        rep.unitReceivedDate = self.date
+        rep.unitReceivedTime = self.time
         rep.shipTo = env['GSX_SHIPTO']
         rep.purchaseOrderNumber = '123456'
         rep.coverageOptions = 'A1'
-        rep.symptom = 'test'
-        rep.diagnosis = 'test'
+        rep.symptom = 'This is a test symptom'
+        rep.diagnosis = 'This is a test diagnosis'
         rep.shipper = 'XUPSN'
         rep.trackingNumber = '123456'
         rep.customerAddress = self.customer
-        part = repairs.RepairOrderLine()
-        part.partNumber = 'X661-5256'
-        part.comptiaCode = 'X01'
-        part.comptiaModifier = 'A'
-        rep.orderLines = [part]
+        rep.orderLines = [self.part]
+
+        rep.reportedSymptomCode = self.symptom
+        rep.reportedIssueCode = self.issue
+
+        rep.reportedSymptomCode = ''
+        rep.reportedIssueCode = ''
+
         rep.create()
 
     @skip("Skip")
     def test_whole_unit_exchange(self):
         rep = repairs.WholeUnitExchange()
         rep.serialNumber = ''
-        rep.unitReceivedDate = '08/12/2013'
-        rep.unitReceivedTime = '11:00 am'
+        rep.unitReceivedDate = self.date
+        rep.unitReceivedTime = self.time
         rep.shipTo = ''
         rep.poNumber = ''
         rep.symptom = 'test'
@@ -278,7 +310,7 @@ class TestLocalWarrantyFunctions(TestCase):
 
 class TestRepairDiagnostics(RemoteTestCase):
     def setUp(self):
-        super(DiagnosticsTestCase, self).setUp()
+        super(TestRepairDiagnostics, self).setUp()
         self.results = diagnostics.Diagnostics(serialNumber=env['GSX_SN']).fetch()
 
     def test_diag_result(self):
