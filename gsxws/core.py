@@ -307,6 +307,11 @@ class GsxRequest(object):
             root.append(self.data)
         else:
             request_name = method + "Request"
+
+            # @hack for Reported Symptom/Issue API which nests two ReportedSymptomIssueRequest elements
+            if method.endswith("Request"):
+                request_name = method
+            
             request = ET.SubElement(root, request_name)
             request.append(GSX_SESSION)
 

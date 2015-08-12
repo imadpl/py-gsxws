@@ -54,9 +54,9 @@ class SymptomIssue(GsxObject):
     _namespace = "asp:"
     
     def fetch(self):
-        self._submit("requestData", "ReportedSymptomIssue",
+        self._submit("requestData", "ReportedSymptomIssueRequest",
                      "ReportedSymptomIssueResponse")
-        return self._req.objects
+        return self._req.objects.reportedSymptomIssueResponse
 
 
 class Customer(GsxObject):
