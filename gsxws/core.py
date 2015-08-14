@@ -109,11 +109,15 @@ def validate(value, what=None):
 
     >>> validate('XD368Z/A', 'partNumber')
     True
+    >>> validate('XGWL2Z/A', 'partNumber')
+    True
     >>> validate('ZM661-5883', 'partNumber')
     True
     >>> validate('661-01234', 'partNumber')
     True
     >>> validate('B661-6909', 'partNumber')
+    True
+    >>> validate('G143111400', 'dispatchId')
     True
     >>> validate('blaa', 'serialNumber')
     False
@@ -126,12 +130,12 @@ def validate(value, what=None):
         raise ValueError('%s is not valid input (%s != string)' % (value, type(value)))
 
     rex = {
-        'partNumber':       r'^([A-Z]{1,2})?\d{3}\-?(\d{4,5}|[A-Z]{1,2})(/[A-Z])?$',
+        'partNumber':       r'^([A-Z]{1,4})?\d{1,3}\-?(\d{1,5}|[A-Z]{1,2})(/[A-Z])?$',
         'serialNumber':     r'^[A-Z0-9]{11,12}$',
         'eeeCode':          r'^[A-Z0-9]{3,4}$',
         'returnOrder':      r'^7\d{9}$',
         'repairNumber':     r'^\d{12}$',
-        'dispatchId':       r'^G\d{9}$',
+        'dispatchId':       r'^[A-Z]+\d{9,15}$',
         'alternateDeviceId': r'^\d{15}$',
         'diagnosticEventNumber': r'^\d{23}$',
         'productName':      r'^i?Mac',
