@@ -30,6 +30,7 @@ GROUPS = (
     ('E', "iPod"),
     ('F', "iPad"),
     ('G', "Beats Products"),
+    ('W', "Apple Watch"),
 )
 
 
@@ -92,6 +93,12 @@ class CompTIA(GsxObject):
                 r[g].append((k, v,))
 
         return r[component] if component else r
+
+
+def fetch():
+    """Shortcut for fetching CompTIA data from GSX"""
+    return CompTIA().fetch()
+
 
 if __name__ == '__main__':
     import sys
