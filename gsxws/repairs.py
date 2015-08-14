@@ -54,9 +54,19 @@ class SymptomIssue(GsxObject):
     _namespace = "asp:"
     
     def fetch(self):
-        self._submit("requestData", "ReportedSymptomIssueRequest",
+        self._submit("requestData", "ReportedSymptomIssue",
                      "ReportedSymptomIssueResponse")
         return self._req.objects.reportedSymptomIssueResponse
+
+
+class CompTiaCode(GsxObject):
+    """
+    Data type used to provide comptia codes
+    """
+    comptiaCode = ""
+    comptiaModifier = ""
+    comptiaGroup = ""
+    technicianNote = ""
 
 
 class Customer(GsxObject):
@@ -346,6 +356,16 @@ class WholeUnitExchange(Repair):
         self._namespace = "asp:"
         return self._submit("repairData", "CreateWholeUnitExchange", "repairConfirmation")
 
+
+class MailInRepair(Repair):
+    """
+    This API allows the submission of Mail-In Repair information into GSX,
+    resulting in the creation of a GSX Mail-In Repair. 
+    """
+    def create(self):
+        self._namespace = "asp:"
+        return self._submit("repairData", "CreateMailInRepair", "repairConfirmation")
+        
 
 if __name__ == '__main__':
     import doctest
