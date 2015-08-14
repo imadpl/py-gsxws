@@ -8,8 +8,12 @@ from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
-from gsxws import (repairs, escalations, lookups,
+from gsxws import (repairs, escalations, lookups, returns,
                    GsxError, ServicePart, diagnostics, comptia,)
+
+
+def empty(a):
+    return a in [None, '', ' ']
 
 
 class RemoteTestCase(TestCase):
@@ -18,10 +22,12 @@ class RemoteTestCase(TestCase):
         connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
         self.sn = env['GSX_SN']
         device = Product(sn=self.sn)
-        parts = device.parts()
+
+        # pick the first part with a component code
+        self.first_part = [x for x in device.parts() if not empty(x.componentCode)][0]
 
         self.part = repairs.RepairOrderLine()
-        self.part.partNumber = parts[0].partNumber
+        self.part.partNumber = self.first_part.partNumber
         self.part.comptiaCode = 'X01'
         self.part.comptiaModifier = 'A'
 
@@ -34,7 +40,7 @@ class RemoteTestCase(TestCase):
 
 class ComptiaTestCase(RemoteTestCase):
     def test_fetch_comptia(self):
-        data = comptia.CompTIA().fetch()
+        data = comptia.fetch()
         self.assertIsInstance(data['E'], dict)
 
 
@@ -79,14 +85,24 @@ class RepairTestCase(RemoteTestCase):
         customer.lastName = 'Last Name'
         customer.addressLine1 = 'Address Line 1'
         customer.primaryPhone = '0123456789'
-        customer.city = 'Test'
+        customer.city = 'Helsinki'
         customer.zipCode = '12345'
         customer.state = 'ZZ'
         customer.country = 'FI'
         self.customer = customer
+
         d = datetime.now() - timedelta(days=7)
         self.date = d.strftime('%m/%d/%y')
         self.time = d.strftime('%I:%M AM')
+
+        cdata = comptia.fetch()
+        gcode = str(self.first_part.componentCode)
+
+        _comptia = repairs.CompTiaCode(comptiaGroup=gcode)
+        _comptia.comptiaModifier = comptia.MODIFIERS[0][0]
+        ccode, cdesc = cdata[gcode].popitem()
+        _comptia.comptiaCode = ccode
+        self.comptia = _comptia
 
         r = repairs.SymptomIssue(serialNumber=self.sn).fetch()
         self.symptom = r.symptoms[0].reportedSymptomCode
@@ -163,7 +179,7 @@ class TestEscalationFunctions(RemoteTestCase):
         esc.shipTo = env['GSX_SHIPTO']
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
-        c1 = escalations.Context(1, 'DGKFL06JDHJP')
+        c1 = escalations.Context(1, self.sn)
         c2 = escalations.Context(12, '2404776')
         esc.escalationContext = [c1, c2]
         self.escalation = esc.create()
@@ -237,20 +253,39 @@ class TestRepairFunctions(RepairTestCase):
 
         rep.create()
 
-    @skip("Skip")
+    def test_mail_in(self):
+        rep = repairs.MailInRepair()
+        rep.serialNumber = self.sn
+        rep.unitReceivedDate = self.date
+        rep.unitReceivedTime = self.time
+        rep.orderLines = [self.part]
+        rep.shipTo = env['GSX_SHIPTO']
+        rep.diagnosedByTechId = env['GSX_TECHID']
+        rep.symptom = 'This is a test symptom'
+        rep.diagnosis = 'This is a test diagnosis'
+        rep.customerAddress = self.customer
+        rep.reportedSymptomCode = self.symptom
+        rep.reportedIssueCode = self.issue
+        rep.addressCosmeticDamage = False
+        rep.purchaseOrderNumber = '123456'
+        rep.soldToContact = 'Firstname Lastname'
+        rep.soldToContactPhone = '123456'
+        rep.comptia = [self.comptia]
+        rep.shipper = returns.CARRIERS[25][0]
+        rep.trackingNumber = '12345678'
+        rep.create()
+
     def test_whole_unit_exchange(self):
         rep = repairs.WholeUnitExchange()
         rep.serialNumber = ''
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
-        rep.shipTo = ''
-        rep.poNumber = ''
-        rep.symptom = 'test'
-        rep.diagnosis = 'test'
+        rep.shipTo = env['GSX_SHIPTO']
+        rep.purchaseOrderNumber = '123456'
+        rep.symptom = 'This is a test symptom'
+        rep.diagnosis = 'This is a test diagnosis'
         rep.customerAddress = self.customer
-        part = repairs.RepairOrderLine()
-        part.partNumber = '661-5571'
-        rep.orderLines = [part]
+        rep.orderLines = [self.part]
         rep.create()
 
 
