@@ -54,9 +54,20 @@ class SymptomIssue(GsxObject):
     _namespace = "asp:"
     
     def fetch(self):
+        result = []
         self._submit("requestData", "ReportedSymptomIssue",
                      "ReportedSymptomIssueResponse")
-        return self._req.objects.reportedSymptomIssueResponse
+        r = self._req.objects.reportedSymptomIssueResponse
+
+        if r.symptoms is not None:
+            for s in r.symptoms:
+                result.append((s.reportedSymptomCode, s.reportedSymptomDesc,))
+
+        if r.issues is not None:
+            for s in r.issues:
+                result.append((s.reportedIssueCode, s.reportedIssueDesc,))
+
+        return result
 
 
 class CompTiaCode(GsxObject):

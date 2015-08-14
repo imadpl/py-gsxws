@@ -104,10 +104,10 @@ class RepairTestCase(RemoteTestCase):
         _comptia.comptiaCode = ccode
         self.comptia = _comptia
 
-        r = repairs.SymptomIssue(serialNumber=self.sn).fetch()
-        self.symptom = r.symptoms[0].reportedSymptomCode
-        r = repairs.SymptomIssue(reportedSymptomCode=self.symptom).fetch()
-        self.issue = r.issues[0].reportedIssueCode
+        self._symptoms = repairs.SymptomIssue(serialNumber=self.sn).fetch()
+        self.symptom = self._symptoms[0][0]
+        self._issues = repairs.SymptomIssue(reportedSymptomCode=self.symptom).fetch()
+        self.issue = self._issues[0][0]
 
 
 class TestCoreFunctions(TestCase):
@@ -210,10 +210,11 @@ class TestEscalationFunctions(RemoteTestCase):
 
 
 class TestRepairFunctions(RepairTestCase):
-    def test_symptom_issue(self):
-        from gsxws.repairs import SymptomIssue
-        r = SymptomIssue(serialNumber=env['GSX_SN']).fetch()
-        self.assertEqual(r.symptoms[0].reportedSymptomCode, 6115)
+    def test_symptom_code(self):
+        self.assertEqual(self._symptoms[0][0], 'PD17A')
+
+    def test_issue_code(self):
+        self.assertEqual(self._issues[0][0], 'PD17-01')
     
     def test_create_carryin(self):
         rep = repairs.CarryInRepair()
