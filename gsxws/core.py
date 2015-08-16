@@ -400,6 +400,9 @@ class GsxObject(object):
         except KeyError:
             raise AttributeError("Invalid attribute: %s" % name)
 
+    def unset(self, prop):
+        del(self._data[prop])
+
     def _submit(self, arg, method, ret=None, raw=False):
         "Shortcut for submitting a GsxObject"
         self._req = GsxRequest(**{arg: self})

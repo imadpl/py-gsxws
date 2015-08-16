@@ -73,8 +73,9 @@ class Product(object):
         """
         if self.should_check_activation:
             ad = self.activation()
+            self._gsx.serialNumber = ad.serialNumber
             # "Please enter either a serial number or an IMEI number but not both."
-            return Product(ad.serialNumber).warranty()
+            self._gsx.unset('alternateDeviceId')
 
         if ship_to is not None:
             self._gsx.shipTo = ship_to
@@ -91,6 +92,7 @@ class Product(object):
             self._gsx.unitReceivedDate = date_received
 
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
+
         self.warrantyDetails = self._gsx._req.objects
         self.imageURL = self.warrantyDetails.imageURL
         self.productDescription = self.warrantyDetails.productDescription
