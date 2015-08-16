@@ -72,9 +72,11 @@ class Product(object):
         'Out Of Warranty (No Coverage)'
         """
         if self.should_check_activation:
-            self.activation()
+            ad = self.activation()
+            # "Please enter either a serial number or an IMEI number but not both."
+            return Product(ad.serialNumber).warranty()
 
-        if ship_to:
+        if ship_to is not None:
             self._gsx.shipTo = ship_to
             
         try:
@@ -85,7 +87,7 @@ class Product(object):
         except Exception:
             pass
 
-        if date_received:
+        if date_received is not None:
             self._gsx.unitReceivedDate = date_received
 
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
@@ -135,12 +137,12 @@ class Product(object):
         """
         url = url or self.imageURL
 
-        if not url:
+        if url is None:
             raise GsxError("No URL to fetch product image")
 
         try:
             return urllib.urlretrieve(url)[0]
-        except Exception, e:
+        except Exception as e:
             raise GsxError("Failed to fetch product image: %s" % e)
 
     def activation(self):
@@ -156,13 +158,9 @@ class Product(object):
         GsxError: Provided serial number does not belong to an iOS Device...
         """
         self._gsx._namespace = "glob:"
-        ad = self._gsx._submit("FetchIOSActivationDetailsRequest",
-                               "FetchIOSActivationDetails",
-                               "activationDetailsInfo")
-        self.serialNumber = ad.serialNumber
-        self._gsx.serialNumber = self.serialNumber
-        return ad
-
+        return self._gsx._submit("FetchIOSActivationDetailsRequest",
+                                 "FetchIOSActivationDetails",
+                                 "activationDetailsInfo")
 
     @property
     def fmip_status(self, wty=None):
@@ -194,6 +192,10 @@ class Product(object):
 
     @property
     def should_check_activation(self):
+        """
+        Returns True if activation check should be run.
+        This is mainly for WarrantyStatus which does not accept IMEI.
+        """
         return hasattr(self, "alternateDeviceId") and not hasattr(self, "serialNumber")
 
     @property

@@ -305,9 +305,12 @@ class TestRemoteWarrantyFunctions(RemoteTestCase):
     def test_warranty_lookup(self):
         self.assertEqual(self.wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
+    def test_warranty_lookup_imei(self):
+        wty = Product(env['GSX_IMEI']).warranty()
+        self.assertEqual(wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
+
     def test_fmip_status(self):
-        self.assertEqual(self.product.fmip_status,
-                         'Find My iPhone is active. Find My iPhone must be turned off for whole unit repairs.')
+        self.assertContains(self.product.fmip_status, 'Find My iPhone is active')
 
     def test_fmip_active(self):
         self.assertTrue(self.product.fmip_is_active)

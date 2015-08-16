@@ -119,6 +119,8 @@ def validate(value, what=None):
     True
     >>> validate('G143111400', 'dispatchId')
     True
+    >>> validate('R164323085', 'dispatchId')
+    True
     >>> validate('blaa', 'serialNumber')
     False
     >>> validate('MacBook Pro (Retina, Mid 2012)', 'productName')
@@ -366,7 +368,6 @@ class GsxObject(object):
             self.__setattr__(k, v)
 
     def __setattr__(self, name, value):
-
         if name.startswith("_"):
             super(GsxObject, self).__setattr__(name, value)
             return
