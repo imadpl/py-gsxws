@@ -157,7 +157,7 @@ def get_format(locale=GSX_LOCALE):
 
 
 class GsxError(Exception):
-    def __init__(self, message=None, xml=None, url=None):
+    def __init__(self, message=None, xml=None, url=None, code=None):
         self.codes = []
         self.messages = []
 
@@ -178,7 +178,8 @@ class GsxError(Exception):
             for el in root.findall('*//message'):
                 self.messages.append(el.text)
 
-        super(Exception, self).__init__(self.message)
+    def __str__(self):
+        return repr(self.message)
 
     @property
     def code(self):
@@ -305,8 +306,6 @@ class GsxRequest(object):
 
     def _submit(self, method, response=None, raw=False):
         "Constructs and submits the final SOAP message"
-        global GSX_SESSION
-
         root = ET.SubElement(self.body, self.obj._namespace + method)
 
         if method is "Authenticate":
@@ -337,7 +336,7 @@ class GsxRequest(object):
 
         logging.debug("Response: %s %s %s" % (res.status_code, res.reason, xml))
         
-        if raw:
+        if raw is True:
             return ET.fromstring(self.xml_response)
 
         response = response or self._response
@@ -349,6 +348,35 @@ class GsxRequest(object):
 
     def __str__(self):
         return unicode(self).encode('utf-8')
+
+
+class GsxResponse:
+    def __init__(self, http_response, xml, el_method, el_response, raw=False):
+        self.result = None          # result status
+        self.response = None        # objectified result
+        self.el_method = el_method
+        self.el_response = el_response
+
+        if http_response.status_code > 200:
+            raise GsxError(xml=xml, url=self._url)
+
+        self.response = objectify.parse(xml, self.el_response)
+
+        logging.debug("Response: %s %s %s" % (http_response.status_code, http_response.reason, xml))
+        
+        if raw is True:
+            return ET.fromstring(self.xml_response)
+
+        if hasattr(self.response, 'outCome'):
+            self.result = self.response.outCome
+            if self.result == 'STOP':
+                raise GsxError(message=self.response.messages, code=self.result)
+
+    def get_response(self):
+        if self.response is None:
+            raise GsxError('GSX request returned empty result')
+
+        return self.response if len(self.response) > 1 else self.response[0]
 
 
 class GsxObject(object):

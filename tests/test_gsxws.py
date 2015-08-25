@@ -155,6 +155,14 @@ class TestErrorFunctions(TestCase):
         e = GsxError(msg)
         self.assertEqual(e.message, msg)
 
+    def test_error_ca_fmip(self):
+        from gsxws.core import GsxResponse
+        xml = open('tests/fixtures/error_ca_fmip.xml', 'r').read()
+        with self.assertRaisesRegexp(GsxError, 'A repair cannot be created'):
+            GsxResponse(xml=xml, el_method='CreateCarryInResponse', 
+                        el_response='repairConfirmation')
+        
+
 
 class TestLookupFunctions(RemoteTestCase):
     def test_component_check(self):
@@ -296,9 +304,16 @@ class TestPartFunction(RemoteTestCase):
         self.assertIsInstance(parts[0].partNumber, basestring)
 
 
-class TestRemoteWarrantyFunctions(RemoteTestCase):
+class TestRemoteWarrantyFunctions(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from gsxws.core import connect
+        connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
+
     def setUp(self):
         super(TestRemoteWarrantyFunctions, self).setUp()
+        self.sn = env['GSX_SN']
+        device = Product(sn=self.sn)
         self.product = Product(env['GSX_SN'])
         self.wty = self.product.warranty(ship_to=env['GSX_SHIPTO'])
 
@@ -310,7 +325,7 @@ class TestRemoteWarrantyFunctions(RemoteTestCase):
         self.assertEqual(wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
     def test_fmip_status(self):
-        self.assertContains(self.product.fmip_status, 'Find My iPhone is active')
+        self.assertIn('Find My iPhone is active', self.product.fmip_status)
 
     def test_fmip_active(self):
         self.assertTrue(self.product.fmip_is_active)
