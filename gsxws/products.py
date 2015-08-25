@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
 """
 https://gsxwsut.apple.com/apidocs/ut/html/WSAPIChangeLog.html?user=asp
 """
+
 import re
 import urllib
 
@@ -179,7 +179,7 @@ class Product(object):
         """
         Returns True if FMiP status is active, False otherwise
         """
-        return self.fmip_status.startswith('Find My iPhone is active.')
+        return 'Find My iPhone is active' in self.fmip_status
 
     def is_unlocked(self, ad=None):
         """
