@@ -202,11 +202,10 @@ class TestEscalationFunctions(RemoteTestCase):
         result = esc.update()
         self.assertEqual(result.updateStatus, 'SUCCESS')
 
-    @skip("Skip")
     def test_attach_general_escalation(self):
         esc = escalations.Escalation()
         esc.escalationId = self.escalation.escalationId
-        esc.attachment = escalations.FileAttachment('/tmp/logo.png')
+        esc.attachment = escalations.FileAttachment(env['GSX_FILE'])
         result = esc.update()
         self.assertEqual(result.updateStatus, 'SUCCESS')
 
