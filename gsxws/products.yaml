@@ -72,6 +72,7 @@ IPAD:
         - "iPad Air (Wi-Fi)"
         - "iPad Air (Wi-Fi + Cellular)"
         - "iPad Air 2"
+        - "iPad Pro"
 
 IPHONE:
     name: iPhone
@@ -86,12 +87,14 @@ IPHONE:
         - "iPhone 4 (8GB)"
         - "iPhone 4 CDMA"
         - "iPhone 4 CDMA (8GB)"
-        - "iPhone 4S"
+        - "iPhone 4s"
         - "iPhone 5"
         - "iPhone 5C"
-        - "iPhone 5S"
+        - "iPhone 5s"
         - "iPhone 6"
         - "iPhone 6 Plus"
+        - "iPhone 6s"
+        - "iPhone 6s Plus"
 
 IPHONEACCESSORY:
     name: iPhone Accessory
@@ -288,7 +291,7 @@ MACBOOKPRO:
         - "MacBook Pro (Retina, 13-inch, Early 2015)"
         - "MacBook Pro (Retina, 15-inch, Mid 2015)"
 
-SERVER:
+SERVERS:
     name: Server
     models:
         - "Xserve G5 (January 2005)"

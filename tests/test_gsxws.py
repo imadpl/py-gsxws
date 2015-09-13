@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
 import logging
-from os import environ as env
 from datetime import date, datetime
 
 from unittest import main, skip, TestCase
@@ -19,8 +19,8 @@ def empty(a):
 class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
-        connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
-        self.sn = env['GSX_SN']
+        connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
+        self.sn = os.getenv('GSX_SN')
         device = Product(sn=self.sn)
 
         # pick the first part with a component code
@@ -48,7 +48,7 @@ class DiagnosticsTestCase(RemoteTestCase):
     def setUp(self):
         super(DiagnosticsTestCase, self).setUp()
         self.diag = diagnostics.Diagnostics(serialNumber=self.sn)
-        self.diag.shipTo = env['GSX_SHIPTO']
+        self.diag.shipTo = os.getenv('GSX_SHIPTO')
 
     def test_fetch(self):
         self.diag = diagnostics.Diagnostics(alternateDeviceId=self.sn)
@@ -66,12 +66,12 @@ class DiagnosticsTestCase(RemoteTestCase):
             self.assertUnicodeOrInt(r.value)
 
     def test_initiate_email(self):
-        self.diag.emailAddress = env['GSX_EMAIL']
+        self.diag.emailAddress = os.getenv('GSX_EMAIL')
         res = self.diag.initiate()
         self.assertRegexpMatches(str(res), r'\d+')
 
     def test_initiate_phone(self):
-        self.diag.phoneNumber = env['GSX_PHONE']
+        self.diag.phoneNumber = os.getenv('GSX_PHONE')
         with self.assertRaisesRegexp(GsxError, 'SMS sending is not supported'):
             self.diag.initiate()
 
@@ -166,16 +166,16 @@ class TestErrorFunctions(TestCase):
 
 class TestLookupFunctions(RemoteTestCase):
     def test_component_check(self):
-        l = lookups.Lookup(serialNumber=env['GSX_SN'])
+        l = lookups.Lookup(serialNumber=os.getenv('GSX_SN'))
         l.repairStrategy = "CA"
-        l.shipTo = env['GSX_SHIPTO']
+        l.shipTo = os.getenv('GSX_SHIPTO', os.getenv('GSX_SOLDTO'))
         r = l.component_check()
         self.assertFalse(r.eligibility)
 
     def test_component_check_with_parts(self):
-        l = lookups.Lookup(serialNumber=env['GSX_SN'])
+        l = lookups.Lookup(serialNumber=os.getenv('GSX_SN'))
         l.repairStrategy = "CA"
-        l.shipTo = env['GSX_SHIPTO']
+        l.shipTo = os.getenv('GSX_SHIPTO')
         r = l.component_check([self.part])
         self.assertFalse(r.eligibility)
 
@@ -184,7 +184,7 @@ class TestEscalationFunctions(RemoteTestCase):
     def setUp(self):
         super(TestEscalationFunctions, self).setUp()
         esc = escalations.Escalation()
-        esc.shipTo = env['GSX_SHIPTO']
+        esc.shipTo = os.getenv('GSX_SHIPTO')
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
         c1 = escalations.Context(1, self.sn)
@@ -205,7 +205,7 @@ class TestEscalationFunctions(RemoteTestCase):
     def test_attach_general_escalation(self):
         esc = escalations.Escalation()
         esc.escalationId = self.escalation.escalationId
-        esc.attachment = escalations.FileAttachment(env['GSX_FILE'])
+        esc.attachment = escalations.FileAttachment(os.getenv('GSX_FILE'))
         result = esc.update()
         self.assertEqual(result.updateStatus, 'SUCCESS')
 
@@ -229,7 +229,7 @@ class TestRepairFunctions(RepairTestCase):
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
         rep.orderLines = [self.part]
-        rep.shipTo = env['GSX_SHIPTO']
+        rep.shipTo = os.getenv('GSX_SHIPTO')
         rep.poNumber = '123456'
         rep.symptom = 'This is a test symptom'
         rep.diagnosis = 'This is a test diagnosis'
@@ -240,10 +240,10 @@ class TestRepairFunctions(RepairTestCase):
 
     def test_repair_or_replace(self):
         rep = repairs.RepairOrReplace()
-        rep.serialNumber = env['GSX_SN']
+        rep.serialNumber = os.getenv('GSX_SN')
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
-        rep.shipTo = env['GSX_SHIPTO']
+        rep.shipTo = os.getenv('GSX_SHIPTO')
         rep.purchaseOrderNumber = '123456'
         rep.coverageOptions = 'A1'
         rep.symptom = 'This is a test symptom'
@@ -267,8 +267,8 @@ class TestRepairFunctions(RepairTestCase):
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
         rep.orderLines = [self.part]
-        rep.shipTo = env['GSX_SHIPTO']
-        rep.diagnosedByTechId = env['GSX_TECHID']
+        rep.shipTo = os.getenv('GSX_SHIPTO')
+        rep.diagnosedByTechId = os.getenv('GSX_TECHID')
         rep.symptom = 'This is a test symptom'
         rep.diagnosis = 'This is a test diagnosis'
         rep.customerAddress = self.customer
@@ -288,7 +288,7 @@ class TestRepairFunctions(RepairTestCase):
         rep.serialNumber = ''
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
-        rep.shipTo = env['GSX_SHIPTO']
+        rep.shipTo = os.getenv('GSX_SHIPTO')
         rep.purchaseOrderNumber = '123456'
         rep.symptom = 'This is a test symptom'
         rep.diagnosis = 'This is a test diagnosis'
@@ -299,7 +299,7 @@ class TestRepairFunctions(RepairTestCase):
 
 class TestPartFunction(RemoteTestCase):
     def test_product_parts(self):
-        parts = Product(env['GSX_SN']).parts()
+        parts = Product(os.getenv('GSX_SN')).parts()
         self.assertIsInstance(parts[0].partNumber, basestring)
 
 
@@ -307,20 +307,20 @@ class TestRemoteWarrantyFunctions(TestCase):
     @classmethod
     def setUpClass(cls):
         from gsxws.core import connect
-        connect(env['GSX_USER'], env['GSX_SOLDTO'], env['GSX_ENV'])
+        connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
 
     def setUp(self):
         super(TestRemoteWarrantyFunctions, self).setUp()
-        self.sn = env['GSX_SN']
+        self.sn = os.getenv('GSX_SN')
         device = Product(sn=self.sn)
-        self.product = Product(env['GSX_SN'])
-        self.wty = self.product.warranty(ship_to=env['GSX_SHIPTO'])
+        self.product = Product(os.getenv('GSX_SN'))
+        self.wty = self.product.warranty(ship_to=os.getenv('GSX_SHIPTO'))
 
     def test_warranty_lookup(self):
         self.assertEqual(self.wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
     def test_warranty_lookup_imei(self):
-        wty = Product(env['GSX_IMEI']).warranty()
+        wty = Product(os.getenv('GSX_IMEI')).warranty()
         self.assertEqual(wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
     def test_fmip_status(self):
@@ -364,10 +364,10 @@ class TestLocalWarrantyFunctions(TestCase):
 class TestRepairDiagnostics(RemoteTestCase):
     def setUp(self):
         super(TestRepairDiagnostics, self).setUp()
-        self.results = diagnostics.Diagnostics(serialNumber=env['GSX_SN']).fetch()
+        self.results = diagnostics.Diagnostics(serialNumber=os.getenv('GSX_SN')).fetch()
 
     def test_diag_result(self):
-        self.assertEqual(self.results.eventHeader.serialNumber, env['GSX_SN'])
+        self.assertEqual(self.results.eventHeader.serialNumber, os.getenv('GSX_SN'))
 
     def test_result_timestamp(self):
         ts = gsx_diags_timestamp(self.results.eventHeader.startTimeStamp)
@@ -408,7 +408,7 @@ class TestIosDiagnostics(TestCase):
 class TestOnsiteCoverage(RemoteTestCase):
     def setUp(self):
         super(TestOnsiteCoverage, self).setUp()
-        self.product = Product(env['GSX_SN'])
+        self.product = Product(os.getenv('GSX_SN'))
         self.product.warranty()
 
     def test_has_onsite(self):
@@ -433,7 +433,7 @@ class TestActivation(TestCase):
         self.assertIs(type(self.data.unlocked), bool)
         self.assertTrue(self.data.unlocked)
 
-        p = Product(env['GSX_SN'])
+        p = Product(os.getenv('GSX_SN'))
         self.assertTrue(p.is_unlocked(self.data))
 
     def test_imei(self):
