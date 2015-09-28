@@ -350,3 +350,13 @@ OTHER:
     name: Other Products
     models:
         - "Unknown Product"
+
+WATCH:
+    name: Apple Watch
+    models:
+        - "Watch 38mm"
+        - "Watch 42mm"
+        - "Watch Sport 38mm"
+        - "Watch Sport 42mm"
+        - "Watch Edition 38mm"
+        - "Watch Edition 42mm"
