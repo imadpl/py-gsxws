@@ -44,14 +44,16 @@ class ComptiaTestCase(RemoteTestCase):
         self.assertIsInstance(data['E'], dict)
 
 
-class DiagnosticsTestCase(RemoteTestCase):
+class DiagnosticsTestCase(TestCase):
     def setUp(self):
-        super(DiagnosticsTestCase, self).setUp()
+        from gsxws.core import connect
+        connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
+        self.sn = os.getenv('GSX_SN')
+        device = Product(sn=self.sn)
         self.diag = diagnostics.Diagnostics(serialNumber=self.sn)
         self.diag.shipTo = os.getenv('GSX_SHIPTO')
 
     def test_fetch(self):
-        self.diag = diagnostics.Diagnostics(alternateDeviceId=self.sn)
         res = self.diag.fetch()
 
         for r in res.diagnosticTestData.testResult.result:

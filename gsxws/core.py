@@ -292,7 +292,7 @@ class GsxRequest(object):
         # Send GSX client certs with every request
         try:
             self.gsx_cert = os.environ['GSX_CERT']
-            self.gsx_key = os.environ['GSX_KEY']
+            self.gsx_key  = os.environ['GSX_KEY']
         except KeyError as e:
             raise GsxError('SSL configuration error: %s' % e)
 
@@ -316,6 +316,10 @@ class GsxRequest(object):
             # @hack for Reported Symptom/Issue API which nests two ReportedSymptomIssueRequest elements
             if method.endswith("Request"):
                 request_name = method
+
+            # @hack FetchDiagnosticDetails doesn't follow the naming conventions
+            if method.endswith('FetchDiagnosticDetails'):
+                request_name = 'FetchDiagnosticDetailsRequestData'
             
             request = ET.SubElement(root, request_name)
             request.append(GSX_SESSION)
@@ -327,8 +331,8 @@ class GsxRequest(object):
                 request.append(self.data)
 
         data = ET.tostring(self.env, "UTF-8")
-        res = self._send(method, data)
-        xml = res.text.encode('utf-8')
+        res  = self._send(method, data)
+        xml  = res.text.encode('utf-8')
         self.xml_response = xml
 
         if res.status_code > 200:
