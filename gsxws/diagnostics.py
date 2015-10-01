@@ -39,6 +39,16 @@ class Diagnostics(GsxObject):
                      "diagnosticSuitesResponseData")
         return self._req.objects
 
+    def fetch_dc_url(self):
+        """
+        The Fetch Diagnostic Console URL API provides the technician with 
+        the AST 2 Diagnostic Console URL, so the technician 
+        can easily access the interactive diagnostic suites.
+        """
+        self._submit("fetchDCURLRequestData", "FetchDiagnosticConsoleURL",
+                     "fetchDCURLResponseData")
+        return self._req.objects.diagnosticConsoleURL
+
     def events(self):
         """
         The Fetch Diagnostic Event Numbers API allows users to retrieve all

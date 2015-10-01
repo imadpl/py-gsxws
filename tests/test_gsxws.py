@@ -67,6 +67,10 @@ class DiagnosticsTestCase(TestCase):
         for r in res.diagnosticProfileData.report.reportData.key:
             self.assertUnicodeOrInt(r.value)
 
+    def test_fetch_dc_url(self):
+        url = self.diag.fetch_dc_url()
+        self.assertRegexpMatches(url, r'^https://')
+
     def test_initiate_email(self):
         self.diag.emailAddress = os.getenv('GSX_EMAIL')
         res = self.diag.initiate()
