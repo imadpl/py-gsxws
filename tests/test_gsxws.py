@@ -52,6 +52,8 @@ class DiagnosticsTestCase(TestCase):
         device = Product(sn=self.sn)
         self.diag = diagnostics.Diagnostics(serialNumber=self.sn)
         self.diag.shipTo = os.getenv('GSX_SHIPTO')
+        suites = self.diag.fetch_suites()
+        self.suite = suites[0]
 
     def test_fetch(self):
         res = self.diag.fetch()
@@ -68,8 +70,11 @@ class DiagnosticsTestCase(TestCase):
             self.assertUnicodeOrInt(r.value)
 
     def test_fetch_suites(self):
-        suites = self.diag.fetch_suites()
-        self.assertIsInstance(suites[0][0], int)
+        self.assertIsInstance(self.suite[0], int)
+
+    def test_run_test(self):
+        self.diag.diagnosticSuiteId = self.suite[0]
+        self.diag.run_test()
 
     def test_fetch_dc_url(self):
         url = self.diag.fetch_dc_url()

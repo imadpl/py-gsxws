@@ -65,7 +65,7 @@ class Diagnostics(GsxObject):
                      "diagnosticEventNumbers")
         return self._req.objects
 
-    def run(self):
+    def run_test(self):
         """
         The Run Diagnostic Test API allows users to run a specific or 
         all the diagnostic tests on a device.

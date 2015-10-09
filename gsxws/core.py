@@ -324,6 +324,10 @@ class GsxRequest(object):
             # @hack FetchDiagnosticSuites doesn't follow the naming conventions
             if method.endswith('FetchDiagnosticSuites'):
                 request_name = 'FetchDiagnosticSuitesRequestData'
+
+            # @hack RunDiagnosticTest doesn't follow the naming conventions
+            if method.endswith('RunDiagnosticTest'):
+                request_name = 'RunDiagnosticTestRequestData'
             
             request = ET.SubElement(root, request_name)
             request.append(GSX_SESSION)
