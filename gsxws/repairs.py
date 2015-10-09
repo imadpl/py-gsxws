@@ -274,12 +274,16 @@ class CarryInRepair(Repair):
         """
         self._namespace = "emea:"
         result = self._submit("repairData", "CreateCarryIn", "repairConfirmation")
+
+        if hasattr(result, 'repairConfirmation'):
+            messages = result.repairConfirmation.messages
+            raise GsxError(messages)
+
         self.dispatchId = result.confirmationNumber
         return result
 
     def update(self, newdata):
         """
-        Description
         The Update Carry-In Repair API allows the service providers
         to update the existing  open carry-in repairs.
         This API assists in addition/deletion of parts and addition of notes

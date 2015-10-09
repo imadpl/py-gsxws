@@ -51,11 +51,11 @@ class CompTIA(GsxObject):
         The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers.
 
         Context:
-        The CompTIA Codes (Symptom Codes) are the current available selections based on
-        the component group code for parts.
+        The CompTIA Codes (Symptom Codes) are the current available selections 
+        based on the component group code for parts.
         The API can be executed only after valid Authentication.
-        Users can use the API at any point to retrieve the CompTIA code and modifier details,
-        in order to create or update repairs.
+        Users can use the API at any point to retrieve the CompTIA code and 
+        modifier details, in order to create or update repairs.
 
         >>> CompTIA().fetch() # doctest: +ELLIPSIS
         {u'A': {'989': u'Remote Inoperable', ...
@@ -63,7 +63,8 @@ class CompTIA(GsxObject):
         if self._cache.get('comptia'):
             return self._cache.get('comptia')
 
-        doc = self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup", "comptiaInfo", raw=True)
+        doc = self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup",
+                           "comptiaInfo", raw=True)
         root = doc.find('.//comptiaInfo')
 
         for el in root.findall(".//comptiaGroup"):

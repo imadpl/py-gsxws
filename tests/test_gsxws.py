@@ -67,6 +67,10 @@ class DiagnosticsTestCase(TestCase):
         for r in res.diagnosticProfileData.report.reportData.key:
             self.assertUnicodeOrInt(r.value)
 
+    def test_fetch_suites(self):
+        suites = self.diag.fetch_suites()
+        self.assertIsInstance(suites[0][0], int)
+
     def test_fetch_dc_url(self):
         url = self.diag.fetch_dc_url()
         self.assertRegexpMatches(url, r'^https://')

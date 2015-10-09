@@ -8,10 +8,11 @@ class Diagnostics(GsxObject):
 
     def initiate(self):
         """
-        The Initiate iOS Diagnostic API allows users to initiate Diagnostic Request for iOS Device.
+        The Initiate iOS Diagnostic API allows users to initiate 
+        Diagnostic Request for iOS Device.
         Then it sends the diagnostic URL (diags://<Ticket Number >) as an email or SMS 
-        to the email address or phone number based on the information provided in the request. 
-        The ticket is generated within GSX system.
+        to the email address or phone number based on the information provided 
+        in the request. The ticket is generated within GSX system.
         """
         self._submit("initiateRequestData", "InitiateIOSDiagnostic",
                      "initiateResponseData")
@@ -21,8 +22,8 @@ class Diagnostics(GsxObject):
     def fetch(self):
         """
         The Fetch Diagnostic Details API allows users to fetch diagnostic test details 
-        of all Devices. This API will retrieve diagnostic tests performed on the device 
-        as well as profile and report data for the tests. 
+        of all Devices. This API will retrieve diagnostic tests performed on 
+        the device as well as profile and report data for the tests. 
 
         >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()
         """
@@ -32,12 +33,17 @@ class Diagnostics(GsxObject):
 
     def fetch_suites(self):
         """
-        The Fetch Diagnostic Suite API allows user to fetch associated Diagnostic Suite IDs 
-        for a given serial number from Apple Diagnostic Repository irrespective of Service Account. 
+        The Fetch Diagnostic Suite API allows user to fetch associated 
+        Diagnostic Suite IDs for a given serial number 
+        from Apple Diagnostic Repository irrespective of Service Account. 
         """
+        suites = []
         self._submit("diagnosticSuitesRequestData", "FetchDiagnosticSuites",
                      "diagnosticSuitesResponseData")
-        return self._req.objects
+        for i in self._req.objects.diagnosticSuiteDetails:
+            suites.append((i.suiteId, i.suiteName,))
+
+        return suites
 
     def fetch_dc_url(self):
         """
@@ -62,7 +68,8 @@ class Diagnostics(GsxObject):
     def run(self):
         """
         The Run Diagnostic Test API allows users to run a specific or 
-        all the diagnostic tests on a device. User has to first invoke Fetch Diagnostic Suite API 
+        all the diagnostic tests on a device.
+        User has to first invoke Fetch Diagnostic Suite API 
         to fetch associated suite ID's for given serial number.
         """
         self._submit("diagnosticTestRequestData", "RunDiagnosticTest",
