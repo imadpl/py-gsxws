@@ -59,6 +59,10 @@ class SymptomIssue(GsxObject):
                      "ReportedSymptomIssueResponse")
         r = self._req.objects.reportedSymptomIssueResponse
 
+        # This may sometimes come back empty...
+        if r is None:
+            raise GsxError('Symptom/Issue code search failed')
+
         if r.symptoms is not None:
             for s in r.symptoms:
                 result.append((s.reportedSymptomCode, s.reportedSymptomDesc,))
