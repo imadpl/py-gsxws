@@ -231,13 +231,23 @@ class TestEscalationFunctions(RemoteTestCase):
         self.assertEqual(result.escalationType, 'GSX Help')
 
 
-class TestRepairFunctions(RepairTestCase):
+class TestSympomIssueFunctions(RemoteTestCase):
+
+    def setUp(self):
+        super(TestSympomIssueFunctions, self).setUp()
+        self._symptoms = repairs.SymptomIssue(serialNumber=self.sn).fetch()
+        self.symptom = self._symptoms[0][0]
+
     def test_symptom_code(self):
-        self.assertEqual(self._symptoms[0][0], 'PD17A')
+        self.assertIsInstance(self.symptom, int)
 
     def test_issue_code(self):
-        self.assertEqual(self._issues[0][0], 'PD17-01')
-    
+        self._issues = repairs.SymptomIssue(reportedSymptomCode=self.symptom).fetch()
+        self.issue = self._issues[0][0]
+        self.assertRegexpMatches(self.issue, r'[A-Z]+')
+
+
+class TestRepairFunctions(RepairTestCase):
     def test_create_carryin(self):
         rep = repairs.CarryInRepair()
         rep.serialNumber = self.sn
