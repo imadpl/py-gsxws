@@ -280,8 +280,8 @@ class CarryInRepair(Repair):
         result = self._submit("repairData", "CreateCarryIn", "repairConfirmation")
 
         if hasattr(result, 'repairConfirmation'):
-            messages = result.repairConfirmation.messages
-            raise GsxError(messages)
+            if hasattr(result.repairConfirmation, 'messages'):
+                raise GsxError(result.repairConfirmation.messages)
 
         self.dispatchId = result.confirmationNumber
         return result

@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 from unittest import main, skip, TestCase
 
+from gsxws.core import validate
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
 from gsxws import (repairs, escalations, lookups, returns,
@@ -27,7 +28,7 @@ class RemoteTestCase(TestCase):
         self.first_part = [x for x in device.parts() if not empty(x.componentCode)][0]
 
         self.part = repairs.RepairOrderLine()
-        self.part.partNumber = self.first_part.partNumber
+        self.part.partNumber = os.getenv('GSX_PART', self.first_part.partNumber)
         self.part.comptiaCode = 'X01'
         self.part.comptiaModifier = 'A'
 
@@ -232,7 +233,6 @@ class TestEscalationFunctions(RemoteTestCase):
 
 
 class TestSympomIssueFunctions(RemoteTestCase):
-
     def setUp(self):
         super(TestSympomIssueFunctions, self).setUp()
         self._symptoms = repairs.SymptomIssue(serialNumber=self.sn).fetch()
@@ -262,6 +262,7 @@ class TestRepairFunctions(RepairTestCase):
         rep.reportedSymptomCode = self.symptom
         rep.reportedIssueCode = self.issue
         rep.create()
+        self.assertTrue(validate(rep.dispatchId, 'dispatchId'))
 
     def test_repair_or_replace(self):
         rep = repairs.RepairOrReplace()
@@ -320,6 +321,12 @@ class TestRepairFunctions(RepairTestCase):
         rep.customerAddress = self.customer
         rep.orderLines = [self.part]
         rep.create()
+
+    def test_mark_complete(self):
+        rep = repairs.Repair(os.getenv('GSX_DISPATCH'))
+        r = rep.mark_complete()
+        result = r.repairConfirmationNumbers.confirmationNumber
+        self.assertEqual(result, os.getenv('GSX_DISPATCH'))
 
 
 class TestPartFunction(RemoteTestCase):
