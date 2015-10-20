@@ -98,6 +98,14 @@ class Product(object):
         self.productDescription = self.warrantyDetails.productDescription
         self.description = self.productDescription.lstrip('~VIN,')
 
+        self.repair_strategies = []
+
+        try:
+            for i in self.warrantyDetails.availableRepairStrategies:
+                self.repair_strategies.append(i.availableRepairStrategy)
+        except AttributeError:
+            pass
+
         return self.warrantyDetails
 
     def parts(self):
