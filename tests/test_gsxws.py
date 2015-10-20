@@ -348,6 +348,9 @@ class TestRemoteWarrantyFunctions(TestCase):
         self.product = Product(os.getenv('GSX_SN'))
         self.wty = self.product.warranty(ship_to=os.getenv('GSX_SHIPTO'))
 
+    def test_acplus_status(self):
+        self.assertTrue(self.wty.acPlusFlag)
+
     def test_warranty_lookup(self):
         self.assertEqual(self.wty.warrantyStatus, 'Out Of Warranty (No Coverage)')
 
