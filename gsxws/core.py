@@ -278,7 +278,11 @@ class GsxRequest(object):
         "Send the final SOAP message"
         global GSX_ENV, GSX_REGION, GSX_HOSTS, GSX_URL, GSX_TIMEOUT
 
-        self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
+        try:
+            self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
+        except KeyError:
+            raise GsxError('GSX environment (%s) must be one of: %s' % (GSX_ENV, 
+                ', '.join(GSX_HOSTS.keys())))
 
         logging.debug(self._url)
         logging.debug(xmldata)
