@@ -103,7 +103,7 @@ class Product(object):
         try:
             for i in self.warrantyDetails.availableRepairStrategies:
                 self.repair_strategies.append(i.availableRepairStrategy)
-        except AttributeError:
+        except (AttributeError, TypeError):
             pass
 
         return self.warrantyDetails
