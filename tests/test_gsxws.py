@@ -23,13 +23,15 @@ class RemoteTestCase(TestCase):
         connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
         self.sn = os.getenv('GSX_SN')
         device = Product(sn=self.sn)
+        comptia_codes = comptia.fetch()
 
         # pick the first part with a component code
         self.first_part = [x for x in device.parts() if not empty(x.componentCode)][0]
 
         self.part = repairs.RepairOrderLine()
         self.part.partNumber = os.getenv('GSX_PART', self.first_part.partNumber)
-        self.part.comptiaCode = 'X01'
+        comptia_code = comptia_codes[self.first_part.componentCode]
+        self.part.comptiaCode = comptia_code[0][0]
         self.part.comptiaModifier = 'A'
 
     def assertUnicodeOrInt(self, val):
@@ -42,7 +44,7 @@ class RemoteTestCase(TestCase):
 class ComptiaTestCase(RemoteTestCase):
     def test_fetch_comptia(self):
         data = comptia.fetch()
-        self.assertIsInstance(data['E'], dict)
+        self.assertIsInstance(data['E'], list)
 
 
 class DiagnosticsTestCase(TestCase):
@@ -116,8 +118,7 @@ class RepairTestCase(RemoteTestCase):
 
         _comptia = repairs.CompTiaCode(comptiaGroup=gcode)
         _comptia.comptiaModifier = comptia.MODIFIERS[0][0]
-        ccode, cdesc = cdata[gcode].popitem()
-        _comptia.comptiaCode = ccode
+        _comptia.comptiaCode = cdata[gcode][0][0]
         self.comptia = _comptia
 
         self._symptoms = repairs.SymptomIssue(serialNumber=self.sn).fetch()
@@ -132,7 +133,8 @@ class TestCoreFunctions(TestCase):
         part = repairs.RepairOrderLine()
         part.partNumber = '661-5571'
         rep.orderLines = [part]
-        self.assertRegexpMatches(rep.dumps(), '<GsxObject><blaa>ääöö</blaa><orderLines>')
+        self.assertRegexpMatches(rep.dumps(),
+                                '<GsxObject><blaa>ääöö</blaa><orderLines>')
 
 
 class TestTypes(TestCase):
@@ -178,7 +180,6 @@ class TestErrorFunctions(TestCase):
             GsxResponse(xml=xml, el_method='CreateCarryInResponse', 
                         el_response='repairConfirmation')
         
-
 
 class TestLookupFunctions(RemoteTestCase):
     def test_component_check(self):
@@ -311,13 +312,16 @@ class TestRepairFunctions(RepairTestCase):
 
     def test_whole_unit_exchange(self):
         rep = repairs.WholeUnitExchange()
-        rep.serialNumber = ''
+        rep.serialNumber = self.sn
         rep.unitReceivedDate = self.date
         rep.unitReceivedTime = self.time
         rep.shipTo = os.getenv('GSX_SHIPTO')
         rep.purchaseOrderNumber = '123456'
         rep.symptom = 'This is a test symptom'
         rep.diagnosis = 'This is a test diagnosis'
+        rep.poNumber = '123456'
+        rep.reportedSymptomCode = self.symptom
+        rep.reportedIssueCode = self.issue
         rep.customerAddress = self.customer
         rep.orderLines = [self.part]
         rep.create()

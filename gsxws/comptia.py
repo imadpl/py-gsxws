@@ -68,10 +68,10 @@ class CompTIA(GsxObject):
         root = doc.find('.//comptiaInfo')
 
         for el in root.findall(".//comptiaGroup"):
-            group = {}
+            group = []
             comp_id = unicode(el[0].text)
             for ci in el.findall("comptiaCodeInfo"):
-                group[ci[0].text] = unicode(ci[1].text)
+                group.append((ci[0].text, unicode(ci[1].text)),)
 
             self._comptia[comp_id] = group
 
