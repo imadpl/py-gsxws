@@ -8,12 +8,12 @@ from core import GsxObject, GsxError, validate
 from lookups import Lookup
 
 REPAIR_TYPES = (
-    ('CA', "Carry-In/Non-Replinished"),
-    ('NE', "Return Before Replace"),
-    ('NT', "No Trouble Found"),
-    ('ON', "Onsite (Indirect/Direct)"),
-    ('RR', "Repair Or Replace/Whole Unit Mail-In"),
-    ('WH', "Mail-In"),
+    ('CA', 'Carry-In/Non-Replinished'),
+    ('NE', 'Return Before Replace'),
+    ('NT', 'No Trouble Found'),
+    ('ON', 'Onsite (Indirect/Direct)'),
+    ('RR', 'Repair Or Replace/Whole Unit Mail-In'),
+    ('WH', 'Mail-In'),
 )
 
 REPAIR_STATUSES = (
@@ -348,13 +348,13 @@ class RepairOrReplace(Repair):
     The submissions creates a GSX RoR Repair in the system.
     """
     COVERAGE_OPTIONS = (
-        ('N', 'No Damage'),
-        ('A1', 'Battery Service'),
-        ('A2', 'Returnable Damage'),
-        ('A3', 'Non-returnable Damage'),
-        ('X', 'Non-returnable damage covered by AppleCare+'),
+        ('N',   'No Damage'),
+        ('A1',  'Battery Service'),
+        ('A2',  'Returnable Damage'),
+        ('A3',  'Non-returnable Damage'),
+        ('X',   'Non-returnable damage covered by AppleCare+'),
         ('RPL', 'Replace'),
-        ('Z', 'Override to Out of Warranty when part is covered by Variable Warranty')
+        ('Z',   'Override to Out of Warranty when part is covered by Variable Warranty'),
     )
 
     def create(self):

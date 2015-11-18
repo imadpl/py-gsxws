@@ -484,6 +484,9 @@ class GsxObject(object):
         req = GsxRequest(**{'GsxObject': self})
         return ET.tostring(req.data, encoding='utf-8')
 
+    def __str__(self):
+        return str(self._data)
+
 
 class GsxRequestObject(GsxObject):
     "The GSX-friendly representation of this GsxObject"
