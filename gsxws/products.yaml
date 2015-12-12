@@ -4,6 +4,7 @@ APPLETV:
         - "Apple TV"
         - "Apple TV (2nd generation)"
         - "Apple TV (3rd generation)"
+        - "Apple TV (4th generation)"
 
 DISPLAYS:
     name: Display
@@ -69,10 +70,14 @@ IPAD:
         - "iPad mini (2nd generation) (Wi-Fi)"
         - "iPad mini (2nd generation) (Wi-Fi + Cellular)"
         - "iPad mini 3"
+        - "iPad mini 4 (Wi-Fi)"
+        - "iPad mini 4 (Wi-Fi + Cellular)"
         - "iPad Air (Wi-Fi)"
         - "iPad Air (Wi-Fi + Cellular)"
         - "iPad Air 2"
         - "iPad Pro"
+        - "iPad Pro (Wi-Fi)"
+        - "iPad Pro (Wi-Fi + Cellular)"
 
 IPHONE:
     name: iPhone
