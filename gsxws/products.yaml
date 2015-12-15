@@ -79,6 +79,11 @@ IPAD:
         - "iPad Pro (Wi-Fi)"
         - "iPad Pro (Wi-Fi + Cellular)"
 
+IPADACCESSORY:
+    name: iPad Accessory
+    models:
+        - "Apple Pencil"
+
 IPHONE:
     name: iPhone
     models:
