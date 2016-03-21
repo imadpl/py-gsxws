@@ -10,11 +10,21 @@ from gsxws.core import validate
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
 from gsxws import (repairs, escalations, lookups, returns,
-                   GsxError, ServicePart, diagnostics, comptia,)
+                   GsxError, ServicePart, diagnostics, comptia,
+                   comms,)
 
 
 def empty(a):
     return a in [None, '', ' ']
+
+
+class CommsTestCase(TestCase):
+    def setUp(self):
+        from gsxws.core import connect
+        connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
+
+    def test_fetch(self):
+        comms.fetch()
 
 
 class RemoteTestCase(TestCase):
@@ -177,9 +187,9 @@ class TestErrorFunctions(TestCase):
         from gsxws.core import GsxResponse
         xml = open('tests/fixtures/error_ca_fmip.xml', 'r').read()
         with self.assertRaisesRegexp(GsxError, 'A repair cannot be created'):
-            GsxResponse(xml=xml, el_method='CreateCarryInResponse', 
+            GsxResponse(xml=xml, el_method='CreateCarryInResponse',
                         el_response='repairConfirmation')
-        
+
 
 class TestLookupFunctions(RemoteTestCase):
     def test_component_check(self):
