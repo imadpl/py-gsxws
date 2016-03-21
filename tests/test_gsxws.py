@@ -21,10 +21,26 @@ def empty(a):
 class CommsTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
+        self.priority = 'HIGH'
+        self.article_id = 'SN3133'
         connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
+        self.articles = comms.fetch(priority=self.priority, readStatus=False)
 
-    def test_fetch(self):
-        comms.fetch()
+    def test_priority(self):
+        for a in self.articles:
+            self.assertEqual(a.priority, self.priority)
+
+    def test_date(self):
+        for a in self.articles:
+            self.assertIsInstance(a.createdDate, date)
+
+    def test_content(self):
+        content = comms.content(self.article_id)
+        self.assertEqual(content.languageCode, 'en')
+
+    def test_ack(self):
+        result = comms.ack(self.article_id, 'UNREAD')
+        self.assertEqual(result.acknowledgeType, 'UNREAD')
 
 
 class RemoteTestCase(TestCase):
