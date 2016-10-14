@@ -49,6 +49,10 @@ IMAC:
         - "iMac (21.5-inch, Mid 2014)"
         - "iMac (Retina 5K, 27-inch, Late 2014)"
         - "iMac (Retina 5K, 27-inch, Mid 2015)"
+        - "iMac (21.5-inch, Late 2015)"
+        - "iMac (Retina 4K, 21.5-inch, Late 2015)"
+        - "iMac (Retina 5K, 27-inch, Late 2015)"
+
 
 IPAD:
     name: iPad
@@ -105,6 +109,8 @@ IPHONE:
         - "iPhone 6 Plus"
         - "iPhone 6s"
         - "iPhone 6s Plus"
+        - "iPhone SE"
+        - "iPhone 7"
 
 IPHONEACCESSORY:
     name: iPhone Accessory
@@ -131,6 +137,12 @@ MACACCESSORY:
         - "AIRPORT EXTREME 802.11N (1ST GEN)"
         - "Magic Mouse"
         - "Magic Trackpad"
+        - "Magic Keyboard"
+        - "Magic Trackpad 2"
+        - "Magic Mouse 2"
+        - "Smart Keyboard"
+        - "Apple Pencil"
+        - "Siri Remote"
         - "Apple Keyboard with Numeric Keypad"
         - "Apple Wireless Keyboard (Aluminum)"
         - "Apple Wireless Mouse"
@@ -181,6 +193,8 @@ IPODTOUCH:
         - "iPod touch (4th generation)"
         - "iPod touch (5th generation)"
         - "iPod touch 16GB (5th generation)"
+        - "iPod touch 16GB (5th generation, Mid 2013)"
+        - "iPod touch (6th generation)"
 
 MACMINI:
     name: Mac mini
@@ -227,6 +241,7 @@ MACBOOK:
         - "MacBook (13-inch, Late 2009)"
         - "MacBook (13-inch, Mid 2010)"
         - "MacBook (Retina, 12-inch, Early 2015)"
+        - "MacBook (Retina, 12-inch, Early 2016)"
 
 MACBOOKLEGACY:
     name: MacBook
@@ -259,6 +274,8 @@ MACBOOKAIR:
         - "MacBook Air (13-inch, Mid 2013)"
         - "MacBook Air (11-inch, Early 2014)"
         - "MacBook Air (13-inch, Early 2014)"
+        - "MacBook Air (11-inch, Early 2015)"
+        - "MacBook Air (13-inch, Early 2015)"
 
 MACBOOKPRO:
     name: MacBook Pro
