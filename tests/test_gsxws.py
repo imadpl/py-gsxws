@@ -4,13 +4,13 @@ import os
 import logging
 from datetime import date, datetime
 
-from unittest import main, skip, TestCase
+from unittest import TestCase, main, skip
 
-from gsxws.core import validate
+from gsxws.core import validate, GsxCache
 from gsxws.objectify import parse, gsx_diags_timestamp
 from gsxws.products import Product
 from gsxws import (repairs, escalations, lookups, returns,
-                   GsxError, ServicePart, diagnostics, comptia,
+                   GsxError, diagnostics, comptia,
                    comms,)
 
 
@@ -153,14 +153,19 @@ class RepairTestCase(RemoteTestCase):
         self.issue = self._issues[0][0]
 
 
-class TestCoreFunctions(TestCase):
+class CoreFunctionTestCase(TestCase):
     def test_dump(self):
         rep = repairs.Repair(blaa=u'ääöö')
         part = repairs.RepairOrderLine()
         part.partNumber = '661-5571'
         rep.orderLines = [part]
         self.assertRegexpMatches(rep.dumps(),
-                                '<GsxObject><blaa>ääöö</blaa><orderLines>')
+                                 '<GsxObject><blaa>ääöö</blaa><orderLines>')
+
+    def test_cache(self):
+        """Make sure the cache is working."""
+        c = GsxCache('test').set('spam', 'eggs')
+        self.assertEquals(c.get('spam'), 'eggs')
 
 
 class TestTypes(TestCase):
@@ -189,7 +194,7 @@ class TestErrorFunctions(TestCase):
 
     def test_code(self):
         self.assertEqual(self.data.errors['RPR.ONS.025'],
-                        'This unit is not eligible for an Onsite repair from GSX.')
+                         'This unit is not eligible for an Onsite repair from GSX.')
 
     def test_message(self):
         self.assertRegexpMatches(self.data.message, 'Multiple error messages exist.')
@@ -547,18 +552,22 @@ class TestOnsiteDispatchDetail(TestCase):
         self.assertIsInstance(self.data.dispatchOrderLines.isSerialized, bool)
 
 
-class TestRepairUpdate(RemoteTestCase):
+class RepairUpdateTestCase(RemoteTestCase):
     def setUp(self):
-        super(TestRepairUpdate, self).setUp()
-        self.dispatchId = 'G135934345'
+        super(RepairUpdateTestCase, self).setUp()
+        self.dispatchId = 'G210427158'
         self.repair = repairs.CarryInRepair(self.dispatchId)
 
-    def test_set_repair_status(self):
+    def test_set_status_open(self):
         result = self.repair.set_status('BEGR')
         self.assertEqual(result.confirmationNumber, self.dispatchId)
 
+    def test_set_status_ready(self):
+        result = self.repair.set_status('RFPU')
+        self.assertEqual(result.confirmationNumber, self.dispatchId)
+
     def test_set_repair_techid(self):
-        result = self.repair.set_techid('XXXXX')
+        result = self.repair.set_techid(os.getenv('GSX_TECHID'))
         self.assertEqual(result.confirmationNumber, self.dispatchId)
 
 
@@ -572,6 +581,16 @@ class TestCarryinRepairDetail(TestCase):
 
     def test_unicode_name(self):
         self.assertEqual(self.data.primaryAddress.firstName, u'Ääkköset')
+
+
+class ConnectionTestCase(TestCase):
+    """Basic connection tests."""
+
+    def test_access_denied(self):
+        """Make sure we fail with 403 when connecting from non-whitelisted IP."""
+        from gsxws.core import connect
+        with self.assertRaisesRegexp(GsxError, 'Access denied'):
+            connect(os.getenv('GSX_USER'), os.getenv('GSX_SOLDTO'), os.getenv('GSX_ENV'))
 
 
 if __name__ == '__main__':
