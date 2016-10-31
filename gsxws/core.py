@@ -35,7 +35,6 @@ import logging
 import requests
 import tempfile
 import objectify
-from urlparse import urlparse
 import xml.etree.ElementTree as ET
 
 from datetime import date, time, datetime, timedelta
@@ -157,18 +156,29 @@ def get_format(locale=GSX_LOCALE):
 
 
 class GsxError(Exception):
-    def __init__(self, message=None, xml=None, url=None, code=None):
+    """A generic GSX-related error."""
+
+    def __init__(self, message=None, xml=None, url=None, code=None, status=None):
+        """Initialize a GsxError."""
         self.codes = []
         self.messages = []
 
         if isinstance(message, basestring):
             self.messages.append(message)
 
+        if status == 403:
+            self.messages.append('Access denied')
+
         if xml is not None:
             logging.debug(url)
             logging.debug(xml)
-            root = ET.fromstring(xml)
 
+            try:
+                root = ET.fromstring(xml)
+            except Exception:
+                return  # This may also be HTML
+
+            # Collect all the info we have on the error
             for el in root.findall('*//faultcode'):
                 self.codes.append(el.text)
             for el in root.findall('*//faultstring'):
@@ -204,12 +214,8 @@ class GsxError(Exception):
 
 
 class GsxCache(object):
-    """
-    The cache creates a separate shelf for each GSX session.
+    """The cache creates a separate shelf for each GSX session."""
 
-    >>> GsxCache('test').set('spam', 'eggs').get('spam')
-    'eggs'
-    """
     shelf = None
     tmpdir = tempfile.gettempdir()
 
@@ -217,14 +223,15 @@ class GsxCache(object):
         self.key = key
         self.expires = expires
         self.now = datetime.now()
-        filename = os.path.join(self.tmpdir, "gsxws_%s" % key)
-        self.shelf = shelve.open(filename, protocol=-1)
+        self.fp = os.path.join(self.tmpdir, "gsxws_%s" % key)
+        self.shelf = shelve.open(self.fp, protocol=-1)
 
         if not self.shelf.get(key):
             # Initialize the key
             self.set(key, None)
 
     def get(self, key):
+        """Get a value from the cache."""
         try:
             d = self.shelf[key]
             if d['expires'] > self.now:
@@ -235,6 +242,7 @@ class GsxCache(object):
             return None
 
     def set(self, key, value):
+        """Set a value in the cache."""
         d = {
             'value'     : value,
             'expires'   : self.now + self.expires
@@ -243,9 +251,14 @@ class GsxCache(object):
         self.shelf[key] = d
         return self
 
+    def nuke(self):
+        """Delete this cache."""
+        os.remove(self.fp)
+
 
 class GsxRequest(object):
-    "Creates and submits the SOAP envelope"
+    """Creates and submits the SOAP envelope."""
+
     env     = None
     obj     = None # The GsxObject being submitted
     data    = None # The GsxObject payload in XML format
@@ -255,7 +268,7 @@ class GsxRequest(object):
     _response = ""
 
     def __init__(self, **kwargs):
-        "Construct the SOAP envelope"
+        "Construct the SOAP envelope."
         self.objects = []
         self.env = ET.Element("soapenv:Envelope")
         self.env.set("xmlns:core", "http://gsxws.apple.com/elements/core")
@@ -281,8 +294,8 @@ class GsxRequest(object):
         try:
             self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
         except KeyError:
-            raise GsxError('GSX environment (%s) must be one of: %s' % (GSX_ENV, 
-                ', '.join(GSX_HOSTS.keys())))
+            raise GsxError('GSX environment (%s) must be one of: %s' % (GSX_ENV,
+                           ', '.join(GSX_HOSTS.keys())))
 
         logging.debug(self._url)
         logging.debug(xmldata)
@@ -332,7 +345,7 @@ class GsxRequest(object):
             # @hack RunDiagnosticTest doesn't follow the naming conventions
             if method.endswith('RunDiagnosticTest'):
                 request_name = 'RunDiagnosticTestRequestData'
-            
+
             request = ET.SubElement(root, request_name)
             request.append(GSX_SESSION)
 
@@ -343,15 +356,15 @@ class GsxRequest(object):
                 request.append(self.data)
 
         data = ET.tostring(self.env, "UTF-8")
-        res  = self._send(method, data)
-        xml  = res.text.encode('utf-8')
+        res = self._send(method, data)
+        xml = res.text.encode('utf-8')
         self.xml_response = xml
 
-        if res.status_code > 200:
-            raise GsxError(xml=xml, url=self._url)
-
         logging.debug("Response: %s %s %s" % (res.status_code, res.reason, xml))
-        
+
+        if res.status_code > 200:
+            raise GsxError(xml=xml, url=self._url, status=res.status_code)
+
         if raw is True:
             return ET.fromstring(self.xml_response)
 
@@ -379,7 +392,7 @@ class GsxResponse:
         self.response = objectify.parse(xml, self.el_response)
 
         logging.debug("Response: %s %s %s" % (http_response.status_code, http_response.reason, xml))
-        
+
         if raw is True:
             return ET.fromstring(self.xml_response)
 
@@ -396,7 +409,8 @@ class GsxResponse:
 
 
 class GsxObject(object):
-    "XML/SOAP representation of a GSX object"
+    """XML/SOAP representation of a GSX object."""
+
     _data = {}
 
     def __init__(self, *args, **kwargs):
@@ -448,7 +462,7 @@ class GsxObject(object):
         del(self._data[prop])
 
     def _submit(self, arg, method, ret=None, raw=False):
-        "Shortcut for submitting a GsxObject"
+        """Shortcut for submitting a GsxObject."""
         self._req = GsxRequest(**{arg: self})
         result = self._req._submit(method, ret, raw)
         if result is None:
@@ -524,7 +538,7 @@ class GsxSession(GsxObject):
         global GSX_SESSION
         session = self._cache.get("session")
 
-        if not session is None:
+        if session is not None:
             GSX_SESSION = session
         else:
             self._req = GsxRequest(AuthenticateRequest=self)
@@ -546,7 +560,8 @@ def connect(user_id, sold_to,
             region=GSX_REGION,
             locale=GSX_LOCALE):
     """
-    Establishes connection with GSX Web Services.
+    Establish connection with GSX Web Services.
+
     Returns the session ID of the new connection.
     """
     global GSX_ENV
