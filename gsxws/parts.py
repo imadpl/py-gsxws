@@ -16,9 +16,9 @@ REASON_CODES = (
 
 IMAGE_URL = "https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s"
 
+
 class Part(GsxObject):
-    """
-    A service part
+    """A service part.
 
     >>> Part('922-7913').lookup().stockPrice
     6.16
@@ -40,7 +40,7 @@ class Part(GsxObject):
 
         try:
             return urllib.urlretrieve(url, tmpfile[1])[0]
-        except Exception, e:
+        except Exception as e:
             raise GsxError("Failed to fetch part image: %s" % e)
 
 
