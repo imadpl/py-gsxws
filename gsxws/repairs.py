@@ -46,13 +46,14 @@ COVERAGE_STATUSES = (
 
 class SymptomIssue(GsxObject):
     """
-    The Reported Symptom/Issue API allows partners to fetch the information 
-    related to symptoms and issues. If all the validations go through, 
-    api returns a list of valid symptoms/issues according to the input data. 
+    The Reported Symptom/Issue API allows partners to fetch the information
+    related to symptoms and issues. If all the validations go through,
+    api returns a list of valid symptoms/issues according to the input data.
     Otherwise api returns appropriate error message.
     """
+
     _namespace = "asp:"
-    
+
     def fetch(self):
         result = []
         self._submit("requestData", "ReportedSymptomIssue",
