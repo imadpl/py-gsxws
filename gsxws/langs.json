@@ -38,6 +38,7 @@
     "ko_XXX": {"df": "MM/DD/YY", "tf": "HH:MM A"},
     "zf_XXX": {"df": "MM/DD/YY", "tf": "HH:MM A"},
     "zh_XXX": {"df": "DD-MM-YY", "tf": "HH:MM A"},
+    "pl_PL": {"df": "DD-MM-YYYY", "tf": "HH:MM"},
     "pt_BR": {"df": "DD/MM/YY", "tf": "HH:MM A"},
     "pt_XXX": {"df": "DD.MM.YYYY", "tf": "HH:MM A"},
     "tr_TR": {"df": "DD.MM.YYYY", "tf": "HH:MM"},
